@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FrostOps ERP</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0c1220;--ink2:#182030;--ink3:#243048;
+  --cyan:#00c8d7;--cyan2:#009fb0;--cyan-glow:rgba(0,200,215,.12);
+  --amber:#f4a535;--rose:#f04060;--mint:#22d3a0;--violet:#8b5cf6;
+  --surface:#fff;--surface2:#f5f7fb;--surface3:#edf0f6;
+  --border:#e1e6ef;--border2:#c8d0de;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --side:232px;--r:10px;--r-sm:6px;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);
+  --sh-lg:0 8px 32px rgba(0,0,0,.11);
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--surface2);color:var(--text);font-size:14px}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── SIDEBAR ── */
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--side);background:var(--ink);display:flex;flex-direction:column;z-index:200;overflow-y:auto;overflow-x:hidden}
+.sb-top{padding:18px 16px 14px;border-bottom:1px solid var(--ink3);flex-shrink:0}
+.sb-brand{display:flex;align-items:center;gap:10px}
+.sb-logo-box{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--cyan),#007a88);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.sb-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.1}
+.sb-tag{font-size:9.5px;color:#3d5a72;letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+.sb-section{padding:14px 16px 5px;font-size:9.5px;color:#2d4560;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;flex-shrink:0}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;color:#7a9bb8;border-left:3px solid transparent;font-size:13px;transition:all .14s;position:relative;flex-shrink:0;user-select:none}
+.sb-item:hover{color:#c8ddf0;background:rgba(255,255,255,.04)}
+.sb-item.active{color:#fff;background:rgba(0,200,215,.1);border-left-color:var(--cyan)}
+.sb-ic{font-size:14px;width:18px;text-align:center;flex-shrink:0;opacity:.85}
+.sb-item.active .sb-ic{opacity:1}
+.sb-badge{margin-left:auto;background:var(--rose);color:#fff;font-size:9.5px;padding:2px 6px;border-radius:10px;font-weight:700;flex-shrink:0}
+.sb-badge.warn{background:var(--amber);color:#fff}
+.sb-footer{margin-top:auto;padding:12px 16px;border-top:1px solid var(--ink3);flex-shrink:0}
+.sb-user{display:flex;align-items:center;gap:9px}
+.sb-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1e4a6a,#2a7090);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.sb-uname{font-size:12.5px;color:#c8d8e8;font-weight:600}
+.sb-urole{font-size:10.5px;color:#3a5570}
+.sb-ver{font-size:9.5px;color:#1e3045;margin-top:8px;font-variant-numeric:tabular-nums}
+
+/* ── MAIN ── */
+#main{margin-left:var(--side);min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.tb-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;flex:1}
+.tb-search{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 12px 7px 32px;width:200px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center}
+.tb-search:focus{border-color:var(--cyan);background-color:var(--surface)}
+
+/* ── BUTTONS ── */
+.btn{padding:7px 14px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;transition:all .14s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn-primary{background:var(--cyan);color:#fff}.btn-primary:hover{background:var(--cyan2)}
+.btn-ghost{background:transparent;border:1.5px solid var(--border2);color:var(--text2)}.btn-ghost:hover{background:var(--surface3)}
+.btn-success{background:#dcfce7;border:1px solid #86efac;color:#15803d}
+.btn-danger{background:#fee2e2;border:1px solid #fca5a5;color:#b91c1c}
+.btn-warn{background:#fef3c7;border:1px solid #fcd34d;color:#92400e}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-xs{padding:3px 8px;font-size:11px}
+
+/* ── CONTENT ── */
+.content{padding:22px 24px 40px;flex:1}
+.page{display:none}
+.page.active{display:block;animation:fadeUp .22s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-c::before{background:var(--cyan)}.stat-a::before{background:var(--amber)}.stat-m::before{background:var(--mint)}.stat-r::before{background:var(--rose)}.stat-v::before{background:var(--violet)}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:7px}
+.stat-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1;color:var(--text)}
+.stat-sub{font-size:11.5px;color:var(--text3);margin-top:5px}
+.up{color:var(--mint)}.dn{color:var(--rose)}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.card-h{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.card-title{font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700}
+.card-b{padding:18px}
+
+/* ── LAYOUT ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.mt{margin-top:16px}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--surface2);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);padding:9px 14px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+tbody td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--surface2)}
+.mono{font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.bg-green{background:#dcfce7;color:#166534}.bg-red{background:#fee2e2;color:#991b1b}
+.bg-amber{background:#fef3c7;color:#92400e}.bg-blue{background:#dbeafe;color:#1d4ed8}
+.bg-cyan{background:#cffafe;color:#164e63}.bg-gray{background:#f1f5f9;color:#475569}
+.bg-violet{background:#ede9fe;color:#5b21b6}.bg-orange{background:#ffedd5;color:#9a3412}
+.bg-teal{background:#ccfbf1;color:#134e4a}.bg-rose{background:#ffe4e6;color:#9f1239}
+
+/* ── FORM ── */
+.fgrp{margin-bottom:13px}
+.flabel{display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.fi{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border .14s}
+.fi:focus{border-color:var(--cyan)}
+.fi::placeholder{color:var(--text3)}
+textarea.fi{resize:vertical;min-height:72px;line-height:1.5}
+
+/* ── MODAL ── */
+.ov{display:none;position:fixed;inset:0;background:rgba(8,14,28,.55);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.ov.show{display:flex}
+.modal{background:var(--surface);border-radius:14px;width:93%;max-width:620px;max-height:92vh;overflow-y:auto;box-shadow:var(--sh-lg);border:1px solid var(--border)}
+.mh{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mt2{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+.mx{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text3);line-height:1;padding:0 2px}.mx:hover{color:var(--text)}
+.mb{padding:20px 22px}
+.mf{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* ── ALERT BARS ── */
+.alert{padding:11px 14px;border-radius:var(--r-sm);font-size:12.5px;margin-bottom:14px;display:flex;align-items:flex-start;gap:8px}
+.alert-danger{background:#fff1f2;border:1px solid #fda4af;color:#9f1239}
+.alert-warn{background:#fffbeb;border:1px solid #fcd34d;color:#78350f}
+.alert-ok{background:#f0fdf4;border:1px solid #86efac;color:#14532d}
+.alert-info{background:#eff6ff;border:1px solid #93c5fd;color:#1e40af}
+
+/* ── PROGRESS ── */
+.prog{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden}
+.pf{height:100%;border-radius:2px;transition:width .4s}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px}
+.tab{padding:9px 18px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .14s}
+.tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.tab:hover{color:var(--text2)}
+
+/* ── BAR CHART ── */
+.bar-wrap{display:flex;align-items:flex-end;gap:5px;height:90px;padding-bottom:2px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bar-fill{width:100%;border-radius:3px 3px 0 0;background:var(--cyan);opacity:.75;min-height:3px;transition:height .4s}
+.bar-lbl{font-size:9px;color:var(--text3);font-variant-numeric:tabular-nums}
+
+/* ── PRODUCT GRID ── */
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .18s}
+.pc:hover{box-shadow:var(--sh-lg)}
+.pc-hero{height:68px;display:flex;align-items:center;justify-content:center;font-size:34px}
+.pc-body{padding:12px 14px}
+.pc-name{font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700}
+.pc-sub{font-size:11.5px;color:var(--text3);margin-top:1px}
+.pc-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;font-size:11.5px}
+.pc-mi span:first-child{color:var(--text3);display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;font-weight:600;margin-bottom:1px}
+.pc-mi span:last-child{font-weight:600;color:var(--text)}
+
+/* ── TEMP CHIP ── */
+.tc{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;background:#e0f2fe;color:#075985}
+.tc.hot{background:#fff1f2;color:#9f1239}
+
+/* ── TOAST ── */
+#toaster{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{background:var(--ink2);color:#dce8f5;padding:10px 16px;border-radius:9px;font-size:13px;box-shadow:var(--sh-lg);animation:tin .28s ease;display:flex;align-items:center;gap:8px;border-left:3px solid var(--cyan);max-width:280px;pointer-events:none}
+.toast.err{border-left-color:var(--rose)}.toast.warn{border-left-color:var(--amber)}
+@keyframes tin{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── PL ROWS ── */
+.pl-r{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.pl-r:last-child{border-bottom:none;font-weight:700;font-size:14.5px;padding-top:10px}
+.pl-sub{color:var(--text3)}
+.pl-pos{color:var(--mint);font-weight:700}.pl-neg{color:var(--rose)}
+
+/* ── CHIP ROW ── */
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:5px 13px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .14s;background:var(--surface)}
+.chip:hover,.chip.on{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-glow)}
+
+/* ── FILTER ROW ── */
+.filter-row{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-row .fi{max-width:180px}
+
+/* ── OUTSTANDING AMOUNT ── */
+.amt-red{color:var(--rose);font-weight:700}
+.amt-green{color:var(--mint);font-weight:700}
+.amt-amber{color:var(--amber);font-weight:700}
+
+/* ── ACTIONS COL ── */
+.act{display:flex;gap:5px;align-items:center}
+
+/* ── LOADING ── */
+.loading{display:flex;align-items:center;justify-content:center;padding:48px;color:var(--text3);gap:10px;font-size:13px}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:40px;color:var(--text3)}
+.empty-ic{font-size:36px;margin-bottom:10px}
+.empty p{font-size:13px}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  #sidebar{transform:translateX(-100%);transition:transform .25s}
+  #sidebar.open{transform:translateX(0)}
+  #main{margin-left:0}
+  .stats-row,.g2,.g3,.g4{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ SIDEBAR ════════════════ -->
+<nav id="sidebar">
+  <div class="sb-top">
+    <div class="sb-brand">
+      <div class="sb-logo-box">❄️</div>
+      <div>
+        <div class="sb-name">FrostOps</div>
+        <div class="sb-tag">Frozen Food ERP</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sb-section">Overview</div>
+  <div class="sb-item active" data-page="dashboard"><span class="sb-ic">▣</span>Dashboard</div>
+
+  <div class="sb-section">Catalog</div>
+  <div class="sb-item" data-page="products"><span class="sb-ic">◈</span>Finished Products</div>
+  <div class="sb-item" data-page="rawmaterials"><span class="sb-ic">◎</span>Raw Materials</div>
+
+  <div class="sb-section">Inventory</div>
+  <div class="sb-item" data-page="inventory"><span class="sb-ic">⬡</span>Stock &amp; Inventory<span class="sb-badge warn" id="b-low">0</span></div>
+
+  <div class="sb-section">Sales</div>
+  <div class="sb-item" data-page="customers"><span class="sb-ic">◻</span>Customers</div>
+  <div class="sb-item" data-page="orders"><span class="sb-ic">⬟</span>Sales Orders<span class="sb-badge" id="b-orders">0</span></div>
+  <div class="sb-item" data-page="invoicing"><span class="sb-ic">◇</span>Invoicing</div>
+  <div class="sb-item" data-page="receivables"><span class="sb-ic">◉</span>Receivables<span class="sb-badge" id="b-ar">0</span></div>
+
+  <div class="sb-section">Procurement</div>
+  <div class="sb-item" data-page="suppliers"><span class="sb-ic">⬢</span>Suppliers</div>
+  <div class="sb-item" data-page="purchases"><span class="sb-ic">▣</span>Purchases</div>
+  <div class="sb-item" data-page="payables"><span class="sb-ic">◈</span>Payables</div>
+
+  <div class="sb-section">Operations</div>
+  <div class="sb-item" data-page="production"><span class="sb-ic">⬟</span>Production</div>
+
+  <div class="sb-section">Finance</div>
+  <div class="sb-item" data-page="accounting"><span class="sb-ic">◎</span>Accounting</div>
+
+  <div class="sb-section">System</div>
+  <div class="sb-item" data-page="settings"><span class="sb-ic">◉</span>Settings</div>
+
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-av" id="sb-av">AD</div>
+      <div>
+        <div class="sb-uname" id="sb-uname">Admin</div>
+        <div class="sb-urole" id="sb-urole">Manager</div>
+      </div>
+    </div>
+    <div class="sb-ver">FrostOps ERP v2.0 · 2025</div>
+  </div>
+</nav>
+
+<!-- ════════════════ MAIN ════════════════ -->
+<div id="main">
+  <header class="topbar">
+    <div class="tb-title" id="page-title">Dashboard</div>
+    <input class="tb-search" type="text" placeholder="Search…" id="gsearch">
+    <button class="btn btn-ghost btn-sm" onclick="openModal('m-qa')">⚡ Quick Add</button>
+    <button class="btn btn-primary btn-sm" onclick="openModal('m-qa')">＋ New</button>
+  </header>
+
+  <div class="content">
+
+  <!-- ══ DASHBOARD ══ -->
+  <div class="page active" id="page-dashboard">
+    <div id="dash-alerts"></div>
+    <div class="stats-row" id="dash-stats">
+      <div class="stat stat-c"><div class="stat-label">Inventory Value</div><div class="stat-val" id="ds-inv">…</div><div class="stat-sub" id="ds-inv-s">loading</div></div>
+      <div class="stat stat-m"><div class="stat-label">Revenue (collected)</div><div class="stat-val" id="ds-rev">…</div><div class="stat-sub up" id="ds-rev-s">↑ paid invoices</div></div>
+      <div class="stat stat-a"><div class="stat-label">Receivables</div><div class="stat-val" id="ds-ar">…</div><div class="stat-sub" id="ds-ar-s">outstanding</div></div>
+      <div class="stat stat-r"><div class="stat-label">Payables</div><div class="stat-val" id="ds-pay">…</div><div class="stat-sub" id="ds-pay-s">owed to suppliers</div></div>
+    </div>
+    <div class="g2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-h"><span class="card-title">📉 Low Stock Alerts</span><span class="badge bg-amber" id="d-low-ct">—</span></div>
+        <div class="tw"><table><thead><tr><th>Product</th><th>On Hand</th><th>Min</th><th>Status</th></tr></thead><tbody id="d-low-tbody"></tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="card-title">⏰ Expiring Soon (&lt;30 days)</span><span class="badge bg-rose" id="d-exp-ct">—</span></div>
+        <div class="tw"><table><thead><tr><th>Product</th><th>Batch</th><th>Expires</th><th>Qty</th></tr></thead><tbody id="d-exp-tbody"></tbody></table></div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-h"><span class="card-title">🛒 Recent Orders</span><button class="btn btn-ghost btn-xs" onclick="goPage('orders')">All →</button></div>
+        <div class="tw"><table><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead><tbody id="d-ord-tbody"></tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="card-title">📊 Revenue — Monthly</span></div>
+        <div class="card-b">
+          <div class="bar-wrap" id="d-chart"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px" id="d-chart-labels"></div>
+          <div style="margin-top:14px;display:flex;flex-direction:column;gap:0">
+            <div class="pl-r"><span>Collected Revenue</span><span class="pl-pos" id="d-ytd-rev">—</span></div>
+            <div class="pl-r pl-sub"><span>Expenses (YTD)</span><span class="pl-neg" id="d-ytd-exp">—</span></div>
+            <div class="pl-r"><span>Net Profit</span><span class="pl-pos" id="d-ytd-net">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FINISHED PRODUCTS ══ -->
+  <div class="page" id="page-products">
+    <div class="filter-row">
+      <input class="fi" type="text" placeholder="Search products…" id="fp-q" oninput="renderProducts()">
+      <div class="chips" id="fp-chips" style="margin:0"></div>
+      <button class="btn btn-primary" style="margin-left:auto" onclick="openModal('m-prod')">＋ New Product</button>
+    </div>
+    <div class="pg" id="fp-grid"></div>
+  </div>
+
+  <!-- ══ RAW MATERIALS ══ -->
+  <div class="page" id="page-rawmaterials">
+    <div class="filter-row">
+      <input class="fi" type="text" placeholder="Search materials…" id="rm-q" oninput="renderRM()">
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="csvExport('rm-tbl','raw-materials.csv')">⬇ CSV</button>
+        <button class="btn btn-primary" onclick="openModal('m-rm')">＋ New Material</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><span class="card-title">🧪 Raw Materials</span><span class="badge bg-blue" id="rm-ct">—</span></div>
+      <div class="tw"><table id="rm-tbl">
+        <thead><tr><th>SKU</th><th>Name</th><th>Category</th><th>Stock</th><th>Unit</th><th>Cost/Unit</th><th>Value</th><th>Min Stock</th><th>Supplier</th><th>Storage</th><th>Status</th><th></th></tr></thead>
+        <tbody id="rm-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ══ INVENTORY ══ -->
+  <div class="page" id="page-inventory">
+    <div class="filter-row">
+      <input class="fi" type="text" placeholder="Search inventory…" id="inv-q" oninput="renderInventory()">
+      <select class="fi" id="inv-cat" onchange="renderInventory()"><option value="">All Categories</option><option>Finished Goods</option><option>Raw Materials</option></select>
+      <select class="fi" id="inv-st" onchange="renderInventory()"><option value="">All Status</option><option>In Stock</option><option>Low Stock</option><option>Out of Stock</option></select>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="csvExport('inv-tbl','inventory.csv')">⬇ CSV</button>
+        <button class="btn btn-primary" onclick="openModal('m-inv')">＋ Add Stock</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><span class="card-title">📦 Stock Register</span><span class="badge bg-cyan" id="inv-ct">—</span></div>
+      <div class="tw"><table id="inv-tbl">
+        <thead><tr><th>SKU</th><th>Product</th><th>Category</th><th>Qty</th><th>Unit</th><th>Cost/Unit</th><th>Total Value</th><th>Zone</th><th>Batch</th><th>Expiry</th><th>Min Qty</th><th>Status</th><th></th></tr></thead>
+        <tbody id="inv-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ══ CUSTOMERS ══ -->
+  <div class="page" id="page-customers">
+    <div class="filter-row">
+      <input class="fi" type="text" placeholder="Search customers…" id="cust-q" oninput="renderCustomers()">
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="csvExport('cust-tbl','customers.csv')">⬇ CSV</button>
+        <button class="btn btn-primary" onclick="openModal('m-cust')">＋ Add Customer</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><span class="card-title">👥 Customer Directory</span><span class="badge bg-blue" id="cust-ct">—</span></div>
+      <div class="tw"><table id="cust-tbl">
+        <thead><tr><th>Name</th><th>Contact</th><th>Email</th><th>Country</th><th>Terms</th><th>Credit Limit</th><th>Balance Due</th><th>Status</th><th></th></tr></thead>
+        <tbody id="cust-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ══ SALES ORDERS ══ -->
+  <div class="page" id="page-orders">
+    <div class="filter-row">
+      <input class="fi" type="text" placeholder="Search orders…" id="ord-q" oninput="renderOrders()">
+      <select class="fi" id="ord-st" onchange="renderOrders()"><option value="">All Statuses</option><option>Pending</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option></select>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="csvExport('ord-tbl','orders.csv')">⬇ CSV</button>
+        <button class="btn btn-primary" onclick="openModal('m-ord')">＋ New Order</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><span class="card-title">🛒 Sales Orders</span><div style="display:flex;gap:6px"><span class="badge bg-amber" id="ord-pend">—</span><span class="badge bg-blue" id="ord-total">—</span></div></div>
+      <div class="tw"><table id="ord-tbl">
+        <thead><tr><th>Order #</th><th>Date</th><th>Customer</th><th>Subtotal</th><th>Tax</th><th>Total</th><th>Payment</th><th>Status</th><th>Delivery</th><th></th></tr></thead>
+        <tbody id="ord-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ══ INVOICING ══ -->
+  <div class="page" id="page-invoicing">
+    <div class="filter-row">
+      <select class="fi" id="inv2-st" onchange="renderInvoices()"><option value="">All Statuses</option><option>Unpaid</option><option>Partial</option><option>Paid</option><option>Overdue</option></select>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="csvExport('inv2-tbl','invoices.csv')">⬇ CSV</button>
+        <button class="btn btn-primary" onclick="openModal('m-inv2')">＋ New Invoice</button>
+      </div>
+    </div>
+    <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat stat-r"><div class="stat-label">Outstanding AR</div><div class="stat-val" id="inv-ar">—</div></div>
+      <div class="stat stat-a"><div class="stat-label">Overdue</div><div class="stat-val" id="inv-overdue">—</div></div>
+      <div class="stat stat-m"><div class="stat-label">Paid (Total)</div><div class="stat-val" id="inv-paid">—</div></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><span class="card-title">💳 Invoices</span></div>
+      <div class="tw"><table id="inv2-tbl">
+        <thead><tr><th>Invoice #</th><th>Date</th><th>Due</th><th>Customer</th><th>Subtotal</th><th>Tax (15%)</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th><th></th></tr></thead>
+        <tbody id="inv2-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ══ RECEIVABLES ══ -->
+  <div class="page" id="page-receivables">
+    <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat stat-r"><div class="stat-label">Total Receivables</div><div class="stat-val" id="ar-total">—</div></div>
+      <div class="stat stat-a"><div class="stat-label">Overdue</div><div class="stat-val" id="ar-overdue">—</div></div>
+      <div class="stat stat-m"><div class="stat-label">Customers with Balance</div><div class="stat-val" id="ar-custs">—</div></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><span class="card-title">📥 Accounts Receivable — By Customer</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>Customer</th><th>Country</th><th>Terms</th><th>Invoices Due</th><th>Total Receivable</th><th>Overdue Amount</th><th>Age</th><th>Status</th></tr></thead>
+        <tbody id="ar-tbody"></tbody>
+      </table></div>
+    </div>
+    <div class="card mt">
+      <div class="card-h"><span class="card-title">📋 Unpaid Invoices Detail</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>Invoice #</th><th>Customer</th><th>Date</th><th>Due Date</th><th>Total</th><th>Paid</th><th>Balance</th><th>Days Overdue</th><th>Status</th><th></th></tr></thead>
+        <tbody id="ar-inv-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ══ SUPPLIERS ══ -->
+  <div class="page" id="page-suppliers">
+    <div class="filter-row">
+      <input class="fi" type="text" placeholder="Search suppliers…" id="sup-q" oninput="renderSuppliers()">
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="csvExport('sup-tbl','suppliers.csv')">⬇ CSV</button>
+        <button class="btn btn-primary" onclick="openModal('m-sup')">＋ Add Supplier</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><span class="card-title">🤝 Supplier Directory</span><span class="badge bg-blue" id="sup-ct">—</span></div>
+      <div class="tw"><table id="sup-tbl">
+        <thead><tr><th>Supplier</th><th>Contact</th><th>Category</th><th>Lead Time</th><th>Terms</th><th>Balance Owed</th><th>Rating</th><th>Status</th><th></th></tr></thead>
+        <tbody id="sup-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ══ PURCHASES ══ -->
+  <div class="page" id="page-purchases">
+    <div class="filter-row">
+      <select class="fi" id="po-st" onchange="renderPurchases()"><option value="">All Statuses</option><option>Pending</option><option>Approved</option><option>Received</option><option>Cancelled</option></select>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="csvExport('po-tbl','purchases.csv')">⬇ CSV</button>
+        <button class="btn btn-primary" onclick="openModal('m-po')">＋ New Purchase</button>
+      </div>
+    </div>
+    <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat stat-c"><div class="stat-label">Open POs</div><div class="stat-val" id="po-open">—</div></div>
+      <div class="stat stat-a"><div class="stat-label">Open PO Value</div><div class="stat-val" id="po-val">—</div></div>
+      <div class="stat stat-m"><div class="stat-label">Received This Month</div><div class="stat-val" id="po-recv">—</div></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><span class="card-title">📦 Purchase Orders</span></div>
+      <div class="tw"><table id="po-tbl">
+        <thead><tr><th>PO #</th><th>Supplier</th><th>Date</th><th>Items</th><th>Subtotal</th><th>Tax</th><th>Total</th><th>Expected</th><th>Terms</th><th>Status</th><th></th></tr></thead>
+        <tbody id="po-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ══ PAYABLES ══ -->
+  <div class="page" id="page-payables">
+    <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat stat-r"><div class="stat-label">Total Payables</div><div class="stat-val" id="ap-total">—</div></div>
+      <div class="stat stat-a"><div class="stat-label">Overdue Bills</div><div class="stat-val" id="ap-overdue">—</div></div>
+      <div class="stat stat-c"><div class="stat-label">Suppliers with Balance</div><div class="stat-val" id="ap-sups">—</div></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><span class="card-title">📤 Accounts Payable — By Supplier</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>Supplier</th><th>Category</th><th>Bills Due</th><th>Total Payable</th><th>Overdue</th><th>Status</th></tr></thead>
+        <tbody id="ap-tbody"></tbody>
+      </table></div>
+    </div>
+    <div class="card mt">
+      <div class="card-h"><span class="card-title">📋 Unpaid Bills Detail</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>Bill #</th><th>Supplier</th><th>Date</th><th>Due Date</th><th>Total</th><th>Paid</th><th>Balance</th><th>Days Overdue</th><th>Status</th><th></th></tr></thead>
+        <tbody id="ap-bill-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ══ PRODUCTION ══ -->
+  <div class="page" id="page-production">
+    <div class="filter-row">
+      <div style="margin-left:auto"><button class="btn btn-primary" onclick="openModal('m-batch')">＋ New Batch</button></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat stat-c"><div class="stat-label">Total Batches</div><div class="stat-val" id="pr-total">—</div></div>
+      <div class="stat stat-m"><div class="stat-label">Units Produced</div><div class="stat-val" id="pr-units">—</div></div>
+      <div class="stat stat-a"><div class="stat-label">In Progress</div><div class="stat-val" id="pr-prog">—</div></div>
+      <div class="stat stat-v"><div class="stat-label">QC Pass Rate</div><div class="stat-val" id="pr-qc">—</div></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><span class="card-title">🏭 Production Batches</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>Batch #</th><th>Product</th><th>Planned</th><th>Produced</th><th>Start</th><th>End</th><th>Team</th><th>QC</th><th>Status</th><th></th></tr></thead>
+        <tbody id="pr-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ══ ACCOUNTING ══ -->
+  <div class="page" id="page-accounting">
+    <div class="tabs">
+      <div class="tab active" onclick="accTab(this,'acc-pl')">P&amp;L Statement</div>
+      <div class="tab" onclick="accTab(this,'acc-exp')">Expenses</div>
+    </div>
+    <div id="acc-pl">
+      <div class="stats-row">
+        <div class="stat stat-m"><div class="stat-label">Revenue</div><div class="stat-val" id="acc-rev">—</div></div>
+        <div class="stat stat-r"><div class="stat-label">Total Expenses</div><div class="stat-val" id="acc-exp-val">—</div></div>
+        <div class="stat stat-c"><div class="stat-label">Net Profit</div><div class="stat-val" id="acc-net">—</div></div>
+        <div class="stat stat-a"><div class="stat-label">Profit Margin</div><div class="stat-val" id="acc-margin">—</div></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="card-h"><span class="card-title">Profit & Loss</span></div><div class="card-b" id="pl-body"></div></div>
+        <div class="card">
+          <div class="card-h"><span class="card-title">Monthly Revenue</span></div>
+          <div class="card-b">
+            <div class="bar-wrap" id="acc-chart" style="height:110px"></div>
+            <div style="display:flex;justify-content:space-between;margin-top:5px;font-size:9.5px;color:var(--text3)" id="acc-labels"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="acc-exp" style="display:none">
+      <div style="margin-bottom:14px;display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="openModal('m-exp')">＋ Add Expense</button>
+        <button class="btn btn-ghost btn-sm" onclick="csvExport('exp-tbl','expenses.csv')">⬇ CSV</button>
+      </div>
+      <div class="card">
+        <div class="tw"><table id="exp-tbl">
+          <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Paid By</th><th></th></tr></thead>
+          <tbody id="exp-tbody"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SETTINGS ══ -->
+  <div class="page" id="page-settings">
+    <div class="g2">
+      <div class="card">
+        <div class="card-h"><span class="card-title">🏢 Company Info</span></div>
+        <div class="card-b">
+          <div class="fgrp"><label class="flabel">Company Name</label><input class="fi" id="s-co" placeholder="Your company name"></div>
+          <div class="fgrp"><label class="flabel">VAT / Tax Number</label><input class="fi" id="s-vat" placeholder="VAT-300123456700003"></div>
+          <div class="fgrp"><label class="flabel">Country</label>
+            <select class="fi" id="s-country"><option>Saudi Arabia</option><option>UAE</option><option>Qatar</option><option>Kuwait</option><option>Bahrain</option><option>Other</option></select>
+          </div>
+          <div class="fgrp"><label class="flabel">Currency</label>
+            <select class="fi" id="s-currency"><option value="SAR">SAR — Saudi Riyal</option><option value="USD">USD — US Dollar</option><option value="AED">AED — UAE Dirham</option></select>
+          </div>
+          <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="card-title">👤 User Profile</span></div>
+        <div class="card-b">
+          <div class="fgrp"><label class="flabel">Name</label><input class="fi" id="s-name" placeholder="Full name"></div>
+          <div class="fgrp"><label class="flabel">Role</label><select class="fi" id="s-role"><option>Manager</option><option>Admin</option><option>Accountant</option><option>Warehouse Staff</option></select></div>
+          <div class="fgrp"><label class="flabel">Email</label><input class="fi" id="s-email" type="email" placeholder="email@company.com"></div>
+          <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="card-title">🔔 Alert Thresholds</span></div>
+        <div class="card-b">
+          <div class="fgrp"><label class="flabel">Low Stock Warning (%)</label><input class="fi" id="s-low" type="number" value="30"></div>
+          <div class="fgrp"><label class="flabel">Expiry Warning (days)</label><input class="fi" id="s-exp" type="number" value="30"></div>
+          <div class="fgrp"><label class="flabel">Tax Rate (%)</label><input class="fi" id="s-tax" type="number" value="15"></div>
+          <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="card-title">🗄️ Data</span></div>
+        <div class="card-b">
+          <p style="font-size:12.5px;color:var(--text2);margin-bottom:14px;line-height:1.6">Data is stored in <code>db.json</code> on the server. Export it regularly for backups.</p>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <button class="btn btn-ghost" onclick="window.open('/api/settings')">🔌 View API Status</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /content -->
+</div>
+
+<!-- ════════════════════ MODALS ════════════════════ -->
+
+<!-- Quick Add -->
+<div class="ov" id="m-qa">
+  <div class="modal" style="max-width:400px">
+    <div class="mh"><span class="mt2">⚡ Quick Add</span><button class="mx" onclick="closeModal('m-qa')">×</button></div>
+    <div class="mb">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+        <button class="btn btn-ghost" style="flex-direction:column;padding:14px;height:80px" onclick="closeModal('m-qa');openModal('m-prod')"><span style="font-size:22px">🧊</span><span style="font-size:12px;margin-top:4px">Finished Product</span></button>
+        <button class="btn btn-ghost" style="flex-direction:column;padding:14px;height:80px" onclick="closeModal('m-qa');openModal('m-rm')"><span style="font-size:22px">🧪</span><span style="font-size:12px;margin-top:4px">Raw Material</span></button>
+        <button class="btn btn-ghost" style="flex-direction:column;padding:14px;height:80px" onclick="closeModal('m-qa');openModal('m-inv')"><span style="font-size:22px">📦</span><span style="font-size:12px;margin-top:4px">Add Stock</span></button>
+        <button class="btn btn-ghost" style="flex-direction:column;padding:14px;height:80px" onclick="closeModal('m-qa');openModal('m-ord')"><span style="font-size:22px">🛒</span><span style="font-size:12px;margin-top:4px">Sales Order</span></button>
+        <button class="btn btn-ghost" style="flex-direction:column;padding:14px;height:80px" onclick="closeModal('m-qa');openModal('m-po')"><span style="font-size:22px">📋</span><span style="font-size:12px;margin-top:4px">Purchase Order</span></button>
+        <button class="btn btn-ghost" style="flex-direction:column;padding:14px;height:80px" onclick="closeModal('m-qa');openModal('m-inv2')"><span style="font-size:22px">💳</span><span style="font-size:12px;margin-top:4px">Invoice</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Finished Product -->
+<div class="ov" id="m-prod">
+  <div class="modal">
+    <div class="mh"><span class="mt2">🧊 New Finished Product</span><button class="mx" onclick="closeModal('m-prod')">×</button></div>
+    <div class="mb">
+      <div class="g2">
+        <div class="fgrp"><label class="flabel">Product Name *</label><input class="fi" id="fp-name" placeholder="e.g. Chicken Nuggets"></div>
+        <div class="fgrp"><label class="flabel">SKU</label><input class="fi" id="fp-sku" placeholder="SKU-001"></div>
+        <div class="fgrp"><label class="flabel">Variant / Size</label><input class="fi" id="fp-var" placeholder="1kg, 500g…"></div>
+        <div class="fgrp"><label class="flabel">Sub-category</label>
+          <select class="fi" id="fp-sub"><option>Poultry</option><option>Seafood</option><option>Meat</option><option>Vegetables</option><option>Ready Meals</option><option>Desserts</option></select>
+        </div>
+        <div class="fgrp"><label class="flabel">Selling Price (SAR) *</label><input class="fi" id="fp-price" type="number" placeholder="0.00"></div>
+        <div class="fgrp"><label class="flabel">Unit</label><input class="fi" id="fp-unit" placeholder="Box / Bag / Pack"></div>
+        <div class="fgrp"><label class="flabel">Storage Temp</label><input class="fi" id="fp-temp" placeholder="-18°C"></div>
+        <div class="fgrp"><label class="flabel">Shelf Life (months)</label><input class="fi" id="fp-shelf" type="number" placeholder="12"></div>
+        <div class="fgrp" style="grid-column:span 2"><label class="flabel">Description</label><textarea class="fi" id="fp-desc" placeholder="Product description…"></textarea></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('m-prod')">Cancel</button><button class="btn btn-primary" onclick="saveProduct()">Save Product</button></div>
+  </div>
+</div>
+
+<!-- Raw Material -->
+<div class="ov" id="m-rm">
+  <div class="modal">
+    <div class="mh"><span class="mt2">🧪 New Raw Material</span><button class="mx" onclick="closeModal('m-rm')">×</button></div>
+    <div class="mb">
+      <div class="g2">
+        <div class="fgrp"><label class="flabel">Material Name *</label><input class="fi" id="rm-name" placeholder="e.g. Chicken Breast (raw)"></div>
+        <div class="fgrp"><label class="flabel">SKU</label><input class="fi" id="rm-sku" placeholder="RM-001"></div>
+        <div class="fgrp"><label class="flabel">Category</label>
+          <select class="fi" id="rm-cat"><option>Poultry</option><option>Seafood</option><option>Meat</option><option>Vegetables</option><option>Dry Goods</option><option>Bakery</option><option>Other</option></select>
+        </div>
+        <div class="fgrp"><label class="flabel">Unit</label><input class="fi" id="rm-unit" placeholder="kg / pcs / litre"></div>
+        <div class="fgrp"><label class="flabel">Cost Per Unit (SAR) *</label><input class="fi" id="rm-cost" type="number" placeholder="0.00"></div>
+        <div class="fgrp"><label class="flabel">Current Stock</label><input class="fi" id="rm-stock" type="number" placeholder="0"></div>
+        <div class="fgrp"><label class="flabel">Min Stock Level</label><input class="fi" id="rm-min" type="number" placeholder="0"></div>
+        <div class="fgrp"><label class="flabel">Supplier</label><select class="fi" id="rm-sup"></select></div>
+        <div class="fgrp"><label class="flabel">Storage Temp</label><input class="fi" id="rm-temp" placeholder="-18°C"></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('m-rm')">Cancel</button><button class="btn btn-primary" onclick="saveRM()">Save Material</button></div>
+  </div>
+</div>
+
+<!-- Add Inventory -->
+<div class="ov" id="m-inv">
+  <div class="modal">
+    <div class="mh"><span class="mt2">📦 Add Stock Item</span><button class="mx" onclick="closeModal('m-inv')">×</button></div>
+    <div class="mb">
+      <div class="g2">
+        <div class="fgrp"><label class="flabel">Product Name *</label><input class="fi" id="iv-name" placeholder="Product name"></div>
+        <div class="fgrp"><label class="flabel">SKU</label><input class="fi" id="iv-sku" placeholder="SKU-001"></div>
+        <div class="fgrp"><label class="flabel">Category</label><select class="fi" id="iv-cat"><option>Finished Goods</option><option>Raw Materials</option></select></div>
+        <div class="fgrp"><label class="flabel">Quantity *</label><input class="fi" id="iv-qty" type="number" placeholder="0"></div>
+        <div class="fgrp"><label class="flabel">Unit</label><input class="fi" id="iv-unit" placeholder="boxes / kg / pcs"></div>
+        <div class="fgrp"><label class="flabel">Cost Per Unit (SAR)</label><input class="fi" id="iv-cost" type="number" placeholder="0.00"></div>
+        <div class="fgrp"><label class="flabel">Storage Zone</label>
+          <select class="fi" id="iv-zone"><option>WH-A Zone 1 · -18°C</option><option>WH-A Zone 2 · -22°C</option><option>WH-B Zone 1 · -5°C</option><option>Dispatch Chiller · 2°C</option></select>
+        </div>
+        <div class="fgrp"><label class="flabel">Batch #</label><input class="fi" id="iv-batch" placeholder="BCH-2025-001"></div>
+        <div class="fgrp"><label class="flabel">Expiry Date</label><input class="fi" id="iv-exp" type="date"></div>
+        <div class="fgrp"><label class="flabel">Min Stock Level</label><input class="fi" id="iv-min" type="number" placeholder="0"></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('m-inv')">Cancel</button><button class="btn btn-primary" onclick="saveInv()">Add Stock</button></div>
+  </div>
+</div>
+
+<!-- Customer -->
+<div class="ov" id="m-cust">
+  <div class="modal">
+    <div class="mh"><span class="mt2">👥 Add Customer</span><button class="mx" onclick="closeModal('m-cust')">×</button></div>
+    <div class="mb">
+      <div class="g2">
+        <div class="fgrp"><label class="flabel">Company Name *</label><input class="fi" id="cu-name" placeholder="Company name"></div>
+        <div class="fgrp"><label class="flabel">Contact Person</label><input class="fi" id="cu-contact" placeholder="Contact name"></div>
+        <div class="fgrp"><label class="flabel">Email</label><input class="fi" id="cu-email" type="email" placeholder="email@company.com"></div>
+        <div class="fgrp"><label class="flabel">Phone</label><input class="fi" id="cu-phone" placeholder="+966…"></div>
+        <div class="fgrp"><label class="flabel">Country</label><select class="fi" id="cu-country"><option>Saudi Arabia</option><option>UAE</option><option>Qatar</option><option>Kuwait</option><option>Bahrain</option><option>Other</option></select></div>
+        <div class="fgrp"><label class="flabel">Payment Terms</label><select class="fi" id="cu-terms"><option>Net 30</option><option>Net 60</option><option>Cash</option><option>Prepaid</option></select></div>
+        <div class="fgrp"><label class="flabel">Credit Limit (SAR)</label><input class="fi" id="cu-credit" type="number" placeholder="50000"></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('m-cust')">Cancel</button><button class="btn btn-primary" onclick="saveCustomer()">Add Customer</button></div>
+  </div>
+</div>
+
+<!-- Sales Order -->
+<div class="ov" id="m-ord">
+  <div class="modal">
+    <div class="mh"><span class="mt2">🛒 New Sales Order</span><button class="mx" onclick="closeModal('m-ord')">×</button></div>
+    <div class="mb">
+      <div class="g2">
+        <div class="fgrp"><label class="flabel">Customer *</label><select class="fi" id="ord-cust"></select></div>
+        <div class="fgrp"><label class="flabel">Order Date</label><input class="fi" id="ord-date" type="date"></div>
+        <div class="fgrp"><label class="flabel">Delivery Date</label><input class="fi" id="ord-del" type="date"></div>
+        <div class="fgrp"><label class="flabel">Payment Method</label><select class="fi" id="ord-pay"><option>Bank Transfer</option><option>Credit 30 Days</option><option>Cash</option><option>Cheque</option></select></div>
+        <div class="fgrp" style="grid-column:span 2"><label class="flabel">Items / Description</label><textarea class="fi" id="ord-items" placeholder="List products and quantities…" rows="3"></textarea></div>
+        <div class="fgrp"><label class="flabel">Subtotal (SAR) *</label><input class="fi" id="ord-sub" type="number" placeholder="0.00" oninput="calcOrdTotal()"></div>
+        <div class="fgrp"><label class="flabel">Tax (15%) — auto</label><input class="fi" id="ord-tax" type="number" placeholder="0.00" readonly style="background:var(--surface2)"></div>
+        <div class="fgrp"><label class="flabel">Total (SAR)</label><input class="fi" id="ord-total-f" type="number" placeholder="0.00" readonly style="background:var(--surface2);font-weight:700"></div>
+        <div class="fgrp"><label class="flabel">Notes</label><input class="fi" id="ord-notes" placeholder="Special instructions…"></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('m-ord')">Cancel</button><button class="btn btn-primary" onclick="saveOrder()">Create Order</button></div>
+  </div>
+</div>
+
+<!-- Supplier -->
+<div class="ov" id="m-sup">
+  <div class="modal">
+    <div class="mh"><span class="mt2">🤝 Add Supplier</span><button class="mx" onclick="closeModal('m-sup')">×</button></div>
+    <div class="mb">
+      <div class="g2">
+        <div class="fgrp"><label class="flabel">Company Name *</label><input class="fi" id="su-name" placeholder="Supplier name"></div>
+        <div class="fgrp"><label class="flabel">Contact Person</label><input class="fi" id="su-contact" placeholder="Name"></div>
+        <div class="fgrp"><label class="flabel">Email</label><input class="fi" id="su-email" type="email"></div>
+        <div class="fgrp"><label class="flabel">Phone</label><input class="fi" id="su-phone" placeholder="+966…"></div>
+        <div class="fgrp"><label class="flabel">Category</label><select class="fi" id="su-cat"><option>Poultry</option><option>Seafood</option><option>Meat</option><option>Vegetables</option><option>Packaging</option><option>Dry Goods</option><option>Equipment</option></select></div>
+        <div class="fgrp"><label class="flabel">Lead Time (days)</label><input class="fi" id="su-lead" type="number" placeholder="7"></div>
+        <div class="fgrp"><label class="flabel">Payment Terms</label><select class="fi" id="su-terms"><option>Net 30</option><option>Net 60</option><option>Net 15</option><option>Cash</option><option>Prepaid</option></select></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('m-sup')">Cancel</button><button class="btn btn-primary" onclick="saveSupplier()">Add Supplier</button></div>
+  </div>
+</div>
+
+<!-- Purchase Order -->
+<div class="ov" id="m-po">
+  <div class="modal">
+    <div class="mh"><span class="mt2">📦 New Purchase Order</span><button class="mx" onclick="closeModal('m-po')">×</button></div>
+    <div class="mb">
+      <div class="g2">
+        <div class="fgrp"><label class="flabel">Supplier *</label><select class="fi" id="po-sup"></select></div>
+        <div class="fgrp"><label class="flabel">Order Date</label><input class="fi" id="po-date" type="date"></div>
+        <div class="fgrp"><label class="flabel">Expected Delivery</label><input class="fi" id="po-del" type="date"></div>
+        <div class="fgrp"><label class="flabel">Payment Terms</label><select class="fi" id="po-terms"><option>Net 30</option><option>Net 60</option><option>Cash on Delivery</option><option>Prepaid</option></select></div>
+        <div class="fgrp" style="grid-column:span 2"><label class="flabel">Items Ordered</label><textarea class="fi" id="po-items" placeholder="Describe items and quantities…" rows="3"></textarea></div>
+        <div class="fgrp"><label class="flabel">Subtotal (SAR) *</label><input class="fi" id="po-sub" type="number" placeholder="0.00" oninput="calcPOTotal()"></div>
+        <div class="fgrp"><label class="flabel">Tax (15%) — auto</label><input class="fi" id="po-tax" type="number" placeholder="0.00" readonly style="background:var(--surface2)"></div>
+        <div class="fgrp"><label class="flabel">Total (SAR)</label><input class="fi" id="po-total-f" type="number" placeholder="0.00" readonly style="background:var(--surface2);font-weight:700"></div>
+        <div class="fgrp"><label class="flabel">Notes</label><input class="fi" id="po-notes" placeholder="Special instructions…"></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('m-po')">Cancel</button><button class="btn btn-primary" onclick="savePurchase()">Create PO</button></div>
+  </div>
+</div>
+
+<!-- Invoice -->
+<div class="ov" id="m-inv2">
+  <div class="modal" style="max-width:500px">
+    <div class="mh"><span class="mt2">💳 New Invoice</span><button class="mx" onclick="closeModal('m-inv2')">×</button></div>
+    <div class="mb">
+      <div class="g2">
+        <div class="fgrp"><label class="flabel">Customer *</label><select class="fi" id="i2-cust"></select></div>
+        <div class="fgrp"><label class="flabel">Invoice Date</label><input class="fi" id="i2-date" type="date"></div>
+        <div class="fgrp"><label class="flabel">Due Date</label><input class="fi" id="i2-due" type="date"></div>
+        <div class="fgrp"><label class="flabel">Subtotal (SAR) *</label><input class="fi" id="i2-sub" type="number" placeholder="0.00" oninput="calcInvTotal()"></div>
+        <div class="fgrp"><label class="flabel">Tax (15%) — auto</label><input class="fi" id="i2-tax" readonly style="background:var(--surface2)"></div>
+        <div class="fgrp"><label class="flabel">Total (SAR)</label><input class="fi" id="i2-total" readonly style="background:var(--surface2);font-weight:700"></div>
+        <div class="fgrp" style="grid-column:span 2"><label class="flabel">Notes</label><input class="fi" id="i2-notes" placeholder="Invoice for…"></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('m-inv2')">Cancel</button><button class="btn btn-primary" onclick="saveInvoice()">Create Invoice</button></div>
+  </div>
+</div>
+
+<!-- Pay Invoice -->
+<div class="ov" id="m-pay">
+  <div class="modal" style="max-width:380px">
+    <div class="mh"><span class="mt2">💰 Record Payment</span><button class="mx" onclick="closeModal('m-pay')">×</button></div>
+    <div class="mb">
+      <div class="fgrp"><label class="flabel">Amount to Apply (SAR)</label><input class="fi" id="pay-amt" type="number" placeholder="0.00"></div>
+      <input type="hidden" id="pay-id"><input type="hidden" id="pay-type">
+      <p style="font-size:12.5px;color:var(--text2);margin-top:4px">Leave blank to mark as fully paid.</p>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('m-pay')">Cancel</button><button class="btn btn-success" onclick="doPayment()">Record Payment</button></div>
+  </div>
+</div>
+
+<!-- Expense -->
+<div class="ov" id="m-exp">
+  <div class="modal" style="max-width:440px">
+    <div class="mh"><span class="mt2">💸 Add Expense</span><button class="mx" onclick="closeModal('m-exp')">×</button></div>
+    <div class="mb">
+      <div class="g2">
+        <div class="fgrp"><label class="flabel">Date</label><input class="fi" id="ex-date" type="date"></div>
+        <div class="fgrp"><label class="flabel">Category</label><select class="fi" id="ex-cat"><option>Utilities</option><option>Maintenance</option><option>Logistics</option><option>Packaging</option><option>Salaries</option><option>Marketing</option><option>Other</option></select></div>
+        <div class="fgrp" style="grid-column:span 2"><label class="flabel">Description *</label><input class="fi" id="ex-desc" placeholder="Expense description…"></div>
+        <div class="fgrp"><label class="flabel">Amount (SAR) *</label><input class="fi" id="ex-amt" type="number" placeholder="0.00"></div>
+        <div class="fgrp"><label class="flabel">Paid By</label><select class="fi" id="ex-paid"><option>Bank Transfer</option><option>Cash</option><option>Cheque</option><option>Credit Card</option></select></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('m-exp')">Cancel</button><button class="btn btn-primary" onclick="saveExpense()">Add Expense</button></div>
+  </div>
+</div>
+
+<!-- Production Batch -->
+<div class="ov" id="m-batch">
+  <div class="modal" style="max-width:500px">
+    <div class="mh"><span class="mt2">🏭 New Production Batch</span><button class="mx" onclick="closeModal('m-batch')">×</button></div>
+    <div class="mb">
+      <div class="g2">
+        <div class="fgrp"><label class="flabel">Product *</label><select class="fi" id="bt-prod"></select></div>
+        <div class="fgrp"><label class="flabel">Planned Qty</label><input class="fi" id="bt-qty" type="number" placeholder="0"></div>
+        <div class="fgrp"><label class="flabel">Start Date</label><input class="fi" id="bt-start" type="date"></div>
+        <div class="fgrp"><label class="flabel">End Date</label><input class="fi" id="bt-end" type="date"></div>
+        <div class="fgrp"><label class="flabel">Assigned Team</label><input class="fi" id="bt-team" placeholder="Team A / Worker"></div>
+        <div class="fgrp"><label class="flabel">Notes</label><input class="fi" id="bt-notes" placeholder="Instructions…"></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('m-batch')">Cancel</button><button class="btn btn-primary" onclick="saveBatch()">Start Batch</button></div>
+  </div>
+</div>
+
+<div id="toaster"></div>
+
+<!-- ════════════════ SCRIPT ════════════════ -->
+<script>
+// ── API ──────────────────────────────────────────────────────
+const API = {
+  get: url => fetch(url).then(r=>r.json()),
+  post: (url,d) => fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}).then(r=>r.json()),
+  put: (url,d) => fetch(url,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}).then(r=>r.json()),
+  del: url => fetch(url,{method:'DELETE'}).then(r=>r.json()),
+};
+
+// ── FORMAT HELPERS ───────────────────────────────────────────
+const SAR = n => 'SAR ' + Number(n||0).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtD = d => { if(!d)return'—'; try{return new Date(d+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}catch(e){return d}};
+const today = () => new Date().toISOString().split('T')[0];
+const daysUntil = d => { if(!d)return 999; return Math.round((new Date(d+'T12:00:00')-new Date())/86400000)};
+const uid = p => `${p}-${Date.now()}`;
+
+// badge
+const B_MAP = {
+  'In Stock':'bg-green','Low Stock':'bg-amber','Out of Stock':'bg-red',
+  'Pending':'bg-amber','Processing':'bg-blue','Shipped':'bg-cyan','Delivered':'bg-green','Cancelled':'bg-red',
+  'Approved':'bg-green','Received':'bg-teal',
+  'Paid':'bg-green','Unpaid':'bg-amber','Partial':'bg-blue','Overdue':'bg-red',
+  'Completed':'bg-green','In Progress':'bg-blue','Planned':'bg-gray',
+  'Passed':'bg-green','Failed':'bg-red','Active':'bg-green','Inactive':'bg-gray',
+};
+const badge = (t,cls) => `<span class="badge ${cls||B_MAP[t]||'bg-gray'}">${t||'—'}</span>`;
+
+const CAT_COLOR = {Poultry:'bg-blue',Seafood:'bg-cyan',Meat:'bg-red',Vegetables:'bg-green','Ready Meals':'bg-amber',Desserts:'bg-violet','Dry Goods':'bg-gray',Bakery:'bg-orange'};
+const CAT_EMOJI = {Poultry:'🍗',Seafood:'🦐',Meat:'🥩',Vegetables:'🥦','Ready Meals':'🍕',Desserts:'🍦','Dry Goods':'🌾',Bakery:'🥐'};
+const CAT_BG = {Poultry:'linear-gradient(135deg,#1a3560,#234090)',Seafood:'linear-gradient(135deg,#0a4055,#0c7080)',Meat:'linear-gradient(135deg,#5a1a1a,#802020)',Vegetables:'linear-gradient(135deg,#1a4520,#256830)','Ready Meals':'linear-gradient(135deg,#453a15,#6a5820)',Desserts:'linear-gradient(135deg,#3a1a55,#5a2888)','Dry Goods':'linear-gradient(135deg,#2a2a2a,#404040)',Bakery:'linear-gradient(135deg,#6a3a10,#9a5015)'};
+
+// ── NAV ──────────────────────────────────────────────────────
+const PAGE_TITLES = {
+  dashboard:'Dashboard', products:'Finished Products', rawmaterials:'Raw Materials',
+  inventory:'Stock & Inventory', customers:'Customers', orders:'Sales Orders',
+  invoicing:'Invoicing', receivables:'Accounts Receivable',
+  suppliers:'Suppliers', purchases:'Purchase Orders', payables:'Accounts Payable',
+  production:'Production', accounting:'Accounting & Finance', settings:'Settings'
+};
+
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  const pg = document.getElementById('page-'+id);
+  if(!pg) return;
+  pg.classList.add('active');
+  const sbEl = document.querySelector(`.sb-item[data-page="${id}"]`);
+  if(sbEl) sbEl.classList.add('active');
+  document.getElementById('page-title').textContent = PAGE_TITLES[id]||id;
+  RENDER[id]?.();
+}
+
+document.querySelectorAll('.sb-item[data-page]').forEach(el => {
+  el.addEventListener('click', () => goPage(el.dataset.page));
+});
+
+// ── RENDER MAP ───────────────────────────────────────────────
+const RENDER = {
+  dashboard: renderDashboard,
+  products: renderProducts,
+  rawmaterials: renderRM,
+  inventory: renderInventory,
+  customers: renderCustomers,
+  orders: renderOrders,
+  invoicing: renderInvoices,
+  receivables: renderReceivables,
+  suppliers: renderSuppliers,
+  purchases: renderPurchases,
+  payables: renderPayables,
+  production: renderProduction,
+  accounting: renderAccounting,
+  settings: loadSettings,
+};
+
+// ── DASHBOARD ────────────────────────────────────────────────
+async function renderDashboard() {
+  const d = await API.get('/api/dashboard');
+
+  document.getElementById('ds-inv').textContent = SAR(d.invValue);
+  document.getElementById('ds-inv-s').textContent = d.totalProducts + ' product types';
+  document.getElementById('ds-rev').textContent = SAR(d.revenue);
+  document.getElementById('ds-ar').textContent = SAR(d.receivables);
+  document.getElementById('ds-ar-s').textContent = d.overdueARCount + ' overdue invoices';
+  document.getElementById('ds-pay').textContent = SAR(d.payables);
+  document.getElementById('ds-pay-s').textContent = 'owed to suppliers';
+
+  // Update sidebar badges
+  document.getElementById('b-low').textContent = d.lowStockCount;
+  document.getElementById('b-orders').textContent = d.pendingOrders;
+  document.getElementById('b-ar').textContent = d.overdueARCount;
+
+  // Alerts
+  let alerts = '';
+  if(d.overdueARCount>0) alerts += `<div class="alert alert-danger">⚠ <strong>${d.overdueARCount} overdue invoices</strong> — ${SAR(d.receivables)} outstanding. <button class="btn btn-xs btn-danger" onclick="goPage('receivables')" style="margin-left:8px">View →</button></div>`;
+  if(d.overdueBillsCount>0) alerts += `<div class="alert alert-warn">⚠ <strong>${d.overdueBillsCount} supplier bills overdue</strong> — review payables. <button class="btn btn-xs btn-warn" onclick="goPage('payables')" style="margin-left:8px">View →</button></div>`;
+  if(d.expiringCount>0) alerts += `<div class="alert alert-warn">🕐 <strong>${d.expiringCount} inventory batches</strong> expire within 30 days.</div>`;
+  if(d.lowStockCount>0) alerts += `<div class="alert alert-info">📦 <strong>${d.lowStockCount} items</strong> are below minimum stock level.</div>`;
+  document.getElementById('dash-alerts').innerHTML = alerts;
+
+  // Low stock
+  document.getElementById('d-low-ct').textContent = d.lowStockItems.length + ' items';
+  document.getElementById('d-low-tbody').innerHTML = d.lowStockItems.map(i=>`<tr>
+    <td><strong>${i.productName}</strong></td><td class="mono">${i.qty} ${i.unit}</td>
+    <td class="mono">${i.minQty} ${i.unit}</td><td>${badge(i.status)}</td></tr>`
+  ).join('') || `<tr><td colspan="4" class="empty"><div class="empty-ic">✅</div><p>All stock levels OK</p></td></tr>`;
+
+  // Expiring
+  document.getElementById('d-exp-ct').textContent = d.expiringItems.length;
+  document.getElementById('d-exp-tbody').innerHTML = d.expiringItems.map(i=>{
+    const days = daysUntil(i.expiryDate);
+    const cls = days < 7 ? 'amt-red' : days < 14 ? 'amt-amber' : '';
+    return `<tr><td><strong>${i.productName}</strong></td><td class="mono">${i.batch||'—'}</td>
+      <td class="${cls}">${fmtD(i.expiryDate)} <small>(${days}d)</small></td><td>${i.qty} ${i.unit}</td></tr>`;
+  }).join('') || `<tr><td colspan="4" class="empty"><div class="empty-ic">✅</div><p>No expiry alerts</p></td></tr>`;
+
+  // Recent orders
+  document.getElementById('d-ord-tbody').innerHTML = (d.recentOrders||[]).map(o=>`<tr>
+    <td><strong>${o.id}</strong></td><td>${o.customerName}</td>
+    <td class="mono">${SAR(o.total)}</td><td>${badge(o.status)}</td></tr>`
+  ).join('');
+
+  // Chart
+  const vals = d.revenueChart || [];
+  const max = Math.max(...vals.map(v=>v.value), 1);
+  document.getElementById('d-chart').innerHTML = vals.map((v,i)=>`
+    <div class="bar-col">
+      <div class="bar-fill" style="height:${Math.max(4,Math.round(v.value/max*100))}%;${i===vals.length-1?'background:var(--mint);opacity:1':''}"></div>
+      <div class="bar-lbl">${v.label}</div>
+    </div>`).join('');
+
+  document.getElementById('d-ytd-rev').textContent = SAR(d.revenue);
+  document.getElementById('d-ytd-exp').textContent = SAR(d.expenses);
+  document.getElementById('d-ytd-net').textContent = SAR(d.netProfit);
+}
+
+// ── PRODUCTS ─────────────────────────────────────────────────
+let fpCat = '';
+async function renderProducts() {
+  const items = await API.get('/api/products');
+  const q = document.getElementById('fp-q')?.value?.toLowerCase()||'';
+  const cats = ['', ...new Set(items.map(p=>p.subcat))];
+  document.getElementById('fp-chips').innerHTML = cats.map(c=>`
+    <div class="chip ${fpCat===c?'on':''}" onclick="fpCat='${c}';renderProducts()">${c||'All'}</div>`).join('');
+  const filtered = items.filter(p=>(!q||p.name.toLowerCase().includes(q)||p.sku?.toLowerCase().includes(q))&&(!fpCat||p.subcat===fpCat));
+  document.getElementById('fp-grid').innerHTML = filtered.map(p=>`
+    <div class="pc">
+      <div class="pc-hero" style="background:${CAT_BG[p.subcat]||'#1a2a3a'}">${CAT_EMOJI[p.subcat]||'🧊'}</div>
+      <div class="pc-body">
+        <div class="pc-name">${p.name}</div>
+        <div class="pc-sub">${p.variant||''} &nbsp;·&nbsp; ${badge(p.subcat,CAT_COLOR[p.subcat])}</div>
+        <div class="pc-meta">
+          <div class="pc-mi"><span>Selling Price</span><span>${SAR(p.sellingPrice)}</span></div>
+          <div class="pc-mi"><span>Unit</span><span>${p.unit||'—'}</span></div>
+          <div class="pc-mi"><span>Storage</span><span>${p.storageTemp||'—'}</span></div>
+          <div class="pc-mi"><span>Shelf Life</span><span>${p.shelfMonths} mo</span></div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:6px">
+          <span class="badge bg-gray">${p.sku||'—'}</span>
+          <button class="btn btn-danger btn-xs" style="margin-left:auto" onclick="delItem('products','${p.id}')">✕</button>
+        </div>
+      </div>
+    </div>`).join('') || '<div class="empty"><div class="empty-ic">🧊</div><p>No products found.</p></div>';
+}
+
+async function saveProduct() {
+  const name = document.getElementById('fp-name').value.trim();
+  if(!name){toast('Product name required','err');return}
+  const res = await API.post('/api/products',{
+    name, sku:document.getElementById('fp-sku').value, variant:document.getElementById('fp-var').value,
+    category:'Finished Goods', subcat:document.getElementById('fp-sub').value,
+    sellingPrice:parseFloat(document.getElementById('fp-price').value)||0,
+    unit:document.getElementById('fp-unit').value, storageTemp:document.getElementById('fp-temp').value||'-18°C',
+    shelfMonths:parseInt(document.getElementById('fp-shelf').value)||12,
+    description:document.getElementById('fp-desc').value, active:true
+  });
+  if(res.error){toast(res.error,'err');return}
+  closeModal('m-prod'); clearForm('fp-name,fp-sku,fp-var,fp-price,fp-unit,fp-temp,fp-shelf,fp-desc');
+  renderProducts(); toast('✅ Product saved!');
+}
+
+// ── RAW MATERIALS ────────────────────────────────────────────
+async function renderRM() {
+  const items = await API.get('/api/rawMaterials');
+  const q = document.getElementById('rm-q')?.value?.toLowerCase()||'';
+  const filtered = items.filter(r=>!q||r.name.toLowerCase().includes(q)||r.sku?.toLowerCase().includes(q));
+  document.getElementById('rm-ct').textContent = filtered.length;
+  // populate supplier dropdown
+  const sups = await API.get('/api/suppliers');
+  document.getElementById('rm-sup').innerHTML = sups.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+
+  document.getElementById('rm-tbody').innerHTML = filtered.map(r=>{
+    const low = r.currentStock <= r.minStock;
+    const st = r.currentStock === 0 ? 'Out of Stock' : low ? 'Low Stock' : 'In Stock';
+    return `<tr>
+      <td class="mono">${r.sku||'—'}</td><td><strong>${r.name}</strong></td>
+      <td>${badge(r.category,CAT_COLOR[r.category])}</td>
+      <td class="mono ${low?'amt-amber':''}">${r.currentStock}</td><td>${r.unit}</td>
+      <td class="mono">${SAR(r.costPerUnit)}</td>
+      <td class="mono"><strong>${SAR(r.currentStock*r.costPerUnit)}</strong></td>
+      <td class="mono">${r.minStock}</td><td>${r.supplier||'—'}</td>
+      <td><span class="tc">${r.storageTemp||'—'}</span></td>
+      <td>${badge(st)}</td>
+      <td><button class="btn btn-danger btn-xs" onclick="delItem('rawMaterials','${r.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function saveRM() {
+  const name = document.getElementById('rm-name').value.trim();
+  if(!name){toast('Material name required','err');return}
+  const supEl = document.getElementById('rm-sup');
+  const res = await API.post('/api/rawMaterials',{
+    name, sku:document.getElementById('rm-sku').value, category:document.getElementById('rm-cat').value,
+    unit:document.getElementById('rm-unit').value, costPerUnit:parseFloat(document.getElementById('rm-cost').value)||0,
+    currentStock:parseFloat(document.getElementById('rm-stock').value)||0,
+    minStock:parseFloat(document.getElementById('rm-min').value)||0,
+    supplier:supEl.options[supEl.selectedIndex]?.text||'',
+    storageTemp:document.getElementById('rm-temp').value, active:true
+  });
+  if(res.error){toast(res.error,'err');return}
+  closeModal('m-rm'); clearForm('rm-name,rm-sku,rm-cost,rm-stock,rm-min,rm-temp');
+  renderRM(); toast('✅ Raw material saved!');
+}
+
+// ── INVENTORY ────────────────────────────────────────────────
+async function renderInventory() {
+  const items = await API.get('/api/inventory');
+  const q = document.getElementById('inv-q')?.value?.toLowerCase()||'';
+  const cat = document.getElementById('inv-cat')?.value||'';
+  const st = document.getElementById('inv-st')?.value||'';
+  const filtered = items.filter(i=>
+    (!q||i.productName?.toLowerCase().includes(q)||i.sku?.toLowerCase().includes(q))&&
+    (!cat||i.category===cat)&&(!st||i.status===st));
+  document.getElementById('inv-ct').textContent = filtered.length + ' items';
+  document.getElementById('inv-tbody').innerHTML = filtered.map(i=>{
+    const d = daysUntil(i.expiryDate);
+    const ec = d<7?'amt-red':d<14?'amt-amber':'';
+    return `<tr>
+      <td class="mono">${i.sku||'—'}</td><td><strong>${i.productName}</strong></td>
+      <td>${badge(i.category,'bg-cyan')}</td>
+      <td class="mono">${i.qty}</td><td>${i.unit}</td>
+      <td class="mono">${SAR(i.costPerUnit)}</td>
+      <td class="mono"><strong>${SAR(i.qty*i.costPerUnit)}</strong></td>
+      <td><span class="tc">${i.zone?.split('·')[1]?.trim()||i.zone||'—'}</span></td>
+      <td class="mono">${i.batch||'—'}</td>
+      <td class="${ec}">${fmtD(i.expiryDate)}</td>
+      <td class="mono">${i.minQty}</td><td>${badge(i.status)}</td>
+      <td><button class="btn btn-danger btn-xs" onclick="delItem('inventory','${i.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function saveInv() {
+  const name = document.getElementById('iv-name').value.trim();
+  const qty = parseFloat(document.getElementById('iv-qty').value)||0;
+  if(!name){toast('Product name required','err');return}
+  const min = parseFloat(document.getElementById('iv-min').value)||0;
+  const res = await API.post('/api/inventory',{
+    productName:name, sku:document.getElementById('iv-sku').value,
+    category:document.getElementById('iv-cat').value, qty,
+    unit:document.getElementById('iv-unit').value||'pcs',
+    costPerUnit:parseFloat(document.getElementById('iv-cost').value)||0,
+    zone:document.getElementById('iv-zone').value,
+    batch:document.getElementById('iv-batch').value,
+    expiryDate:document.getElementById('iv-exp').value, minQty:min,
+    status: qty===0?'Out of Stock':qty<=min?'Low Stock':'In Stock'
+  });
+  if(res.error){toast(res.error,'err');return}
+  closeModal('m-inv'); clearForm('iv-name,iv-sku,iv-qty,iv-unit,iv-cost,iv-batch,iv-exp,iv-min');
+  renderInventory(); toast('✅ Stock item added!');
+}
+
+// ── CUSTOMERS ────────────────────────────────────────────────
+async function renderCustomers() {
+  const items = await API.get('/api/customers');
+  const q = document.getElementById('cust-q')?.value?.toLowerCase()||'';
+  const filtered = items.filter(c=>!q||c.name.toLowerCase().includes(q)||c.email?.toLowerCase().includes(q));
+  document.getElementById('cust-ct').textContent = filtered.length;
+  // Populate order modal dropdown
+  document.getElementById('ord-cust').innerHTML = items.map(c=>`<option value="${c.id}" data-name="${c.name}">${c.name}</option>`).join('');
+  document.getElementById('i2-cust').innerHTML = items.map(c=>`<option value="${c.id}" data-name="${c.name}">${c.name}</option>`).join('');
+  document.getElementById('cust-tbody').innerHTML = filtered.map(c=>`<tr>
+    <td><strong>${c.name}</strong></td>
+    <td>${c.contact||'—'}<br><small style="color:var(--text3)">${c.phone||''}</small></td>
+    <td>${c.email||'—'}</td><td>${c.country||'—'}</td><td>${c.terms||'—'}</td>
+    <td class="mono">${SAR(c.creditLimit)}</td>
+    <td class="mono ${c.balance>0?'amt-red':''}">${SAR(c.balance||0)}</td>
+    <td>${badge(c.status||'Active')}</td>
+    <td><button class="btn btn-danger btn-xs" onclick="delItem('customers','${c.id}')">✕</button></td>
+  </tr>`).join('');
+}
+
+async function saveCustomer() {
+  const name = document.getElementById('cu-name').value.trim();
+  if(!name){toast('Company name required','err');return}
+  const res = await API.post('/api/customers',{
+    name, contact:document.getElementById('cu-contact').value,
+    email:document.getElementById('cu-email').value, phone:document.getElementById('cu-phone').value,
+    country:document.getElementById('cu-country').value, terms:document.getElementById('cu-terms').value,
+    creditLimit:parseFloat(document.getElementById('cu-credit').value)||0, balance:0, status:'Active'
+  });
+  if(res.error){toast(res.error,'err');return}
+  closeModal('m-cust'); clearForm('cu-name,cu-contact,cu-email,cu-phone,cu-credit');
+  renderCustomers(); toast('✅ Customer added!');
+}
+
+// ── SALES ORDERS ─────────────────────────────────────────────
+async function renderOrders() {
+  // Ensure customer dropdowns are populated
+  const custs = await API.get('/api/customers');
+  document.getElementById('ord-cust').innerHTML = custs.map(c=>`<option value="${c.id}" data-name="${c.name}">${c.name}</option>`).join('');
+
+  const items = await API.get('/api/salesOrders');
+  const q = document.getElementById('ord-q')?.value?.toLowerCase()||'';
+  const st = document.getElementById('ord-st')?.value||'';
+  const filtered = items.filter(o=>(!q||o.id.toLowerCase().includes(q)||o.customerName?.toLowerCase().includes(q))&&(!st||o.status===st));
+  const pending = items.filter(o=>o.status==='Pending').length;
+  document.getElementById('ord-pend').textContent = pending + ' pending';
+  document.getElementById('ord-total').textContent = filtered.length + ' total';
+  document.getElementById('b-orders').textContent = pending;
+  document.getElementById('ord-tbody').innerHTML = filtered.map(o=>`<tr>
+    <td><strong>${o.id}</strong></td><td>${fmtD(o.date)}</td><td>${o.customerName}</td>
+    <td class="mono">${SAR(o.subtotal)}</td>
+    <td class="mono">${SAR(o.tax)}</td>
+    <td class="mono"><strong>${SAR(o.total)}</strong></td>
+    <td>${o.payment}</td><td>${badge(o.status)}</td><td>${fmtD(o.deliveryDate)}</td>
+    <td><div class="act">
+      <button class="btn btn-ghost btn-xs" onclick="cycleStatus('salesOrders','${o.id}',['Pending','Processing','Shipped','Delivered','Cancelled'])">→</button>
+      <button class="btn btn-danger btn-xs" onclick="delItem('salesOrders','${o.id}')">✕</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function calcOrdTotal() {
+  const sub = parseFloat(document.getElementById('ord-sub').value)||0;
+  const tax = sub*0.15;
+  document.getElementById('ord-tax').value = tax.toFixed(2);
+  document.getElementById('ord-total-f').value = (sub+tax).toFixed(2);
+}
+
+async function saveOrder() {
+  const custEl = document.getElementById('ord-cust');
+  if(!custEl.value){toast('Select a customer','err');return}
+  const sub = parseFloat(document.getElementById('ord-sub').value)||0;
+  if(!sub){toast('Subtotal required','err');return}
+  const tax = sub*0.15;
+  const custName = custEl.options[custEl.selectedIndex].text;
+  const res = await API.post('/api/salesOrders',{
+    date:document.getElementById('ord-date').value||today(),
+    customerId:custEl.value, customerName:custName,
+    items:[{productName:document.getElementById('ord-items').value, qty:1, unitPrice:sub, total:sub}],
+    subtotal:sub, tax, total:sub+tax,
+    payment:document.getElementById('ord-pay').value, status:'Pending',
+    deliveryDate:document.getElementById('ord-del').value,
+    notes:document.getElementById('ord-notes').value
+  });
+  if(res.error){toast(res.error,'err');return}
+  closeModal('m-ord'); clearForm('ord-sub,ord-tax,ord-total-f,ord-items,ord-notes');
+  renderOrders(); toast('✅ Order ' + res.id + ' created! Invoice auto-generated.');
+}
+
+// ── INVOICING ────────────────────────────────────────────────
+async function renderInvoices() {
+  const items = await API.get('/api/invoices');
+  const st = document.getElementById('inv2-st')?.value||'';
+  const filtered = items.filter(i=>!st||i.status===st);
+  const ar = items.filter(i=>i.status!=='Paid').reduce((s,i)=>s+(i.total-i.paid),0);
+  const overdue = items.filter(i=>i.status==='Overdue').reduce((s,i)=>s+(i.total-i.paid),0);
+  const paid = items.filter(i=>i.status==='Paid').reduce((s,i)=>s+i.total,0);
+  document.getElementById('inv-ar').textContent = SAR(ar);
+  document.getElementById('inv-overdue').textContent = SAR(overdue);
+  document.getElementById('inv-paid').textContent = SAR(paid);
+  document.getElementById('b-ar').textContent = items.filter(i=>i.status==='Overdue').length;
+  document.getElementById('inv2-tbody').innerHTML = filtered.map(i=>`<tr>
+    <td><strong>${i.id}</strong></td><td>${fmtD(i.date)}</td><td>${fmtD(i.dueDate)}</td>
+    <td>${i.customerName}</td>
+    <td class="mono">${SAR(i.subtotal||i.total)}</td>
+    <td class="mono">${SAR(i.tax||0)}</td>
+    <td class="mono"><strong>${SAR(i.total)}</strong></td>
+    <td class="mono amt-green">${SAR(i.paid||0)}</td>
+    <td class="mono ${(i.total-(i.paid||0))>0?'amt-red':''}">${SAR(i.total-(i.paid||0))}</td>
+    <td>${badge(i.status)}</td>
+    <td><div class="act">
+      ${i.status!=='Paid'?`<button class="btn btn-success btn-xs" onclick="openPay('${i.id}','invoice')">Pay</button>`:''}
+      <button class="btn btn-danger btn-xs" onclick="delItem('invoices','${i.id}')">✕</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function calcInvTotal() {
+  const sub = parseFloat(document.getElementById('i2-sub').value)||0;
+  const tax = sub*0.15;
+  document.getElementById('i2-tax').value = tax.toFixed(2);
+  document.getElementById('i2-total').value = (sub+tax).toFixed(2);
+}
+
+async function saveInvoice() {
+  const custEl = document.getElementById('i2-cust');
+  if(!custEl.value){toast('Select customer','err');return}
+  const sub = parseFloat(document.getElementById('i2-sub').value)||0;
+  if(!sub){toast('Subtotal required','err');return}
+  const tax = sub*0.15;
+  const res = await API.post('/api/invoices',{
+    customerId:custEl.value, customerName:custEl.options[custEl.selectedIndex].text,
+    date:document.getElementById('i2-date').value||today(),
+    dueDate:document.getElementById('i2-due').value,
+    subtotal:sub, tax, total:sub+tax, paid:0, status:'Unpaid',
+    notes:document.getElementById('i2-notes').value
+  });
+  if(res.error){toast(res.error,'err');return}
+  closeModal('m-inv2'); clearForm('i2-sub,i2-tax,i2-total,i2-notes');
+  renderInvoices(); toast('✅ Invoice ' + res.id + ' created!');
+}
+
+// ── RECEIVABLES ──────────────────────────────────────────────
+async function renderReceivables() {
+  const [rows, invs] = await Promise.all([API.get('/api/receivables'), API.get('/api/invoices')]);
+  const total = rows.reduce((s,r)=>s+r.totalReceivable,0);
+  const overdue = rows.reduce((s,r)=>s+r.overdueAmount,0);
+  document.getElementById('ar-total').textContent = SAR(total);
+  document.getElementById('ar-overdue').textContent = SAR(overdue);
+  document.getElementById('ar-custs').textContent = rows.length;
+  document.getElementById('ar-tbody').innerHTML = rows.map(r=>`<tr>
+    <td><strong>${r.name}</strong></td><td>${r.country}</td><td>${r.terms}</td>
+    <td>${r.invoiceCount}</td>
+    <td class="mono amt-amber"><strong>${SAR(r.totalReceivable)}</strong></td>
+    <td class="mono ${r.overdueAmount>0?'amt-red':''}">${SAR(r.overdueAmount)}</td>
+    <td>${r.overdueAmount>0?badge('Overdue'):badge('Current')}</td>
+    <td>${badge(r.overdueAmount>0?'Overdue':'Outstanding')}</td>
+  </tr>`).join('') || '<tr><td colspan="8" class="empty"><p>✅ No outstanding receivables</p></td></tr>';
+
+  const unpaid = invs.filter(i=>i.status!=='Paid');
+  document.getElementById('ar-inv-tbody').innerHTML = unpaid.map(i=>{
+    const bal = i.total-(i.paid||0);
+    const days = daysUntil(i.dueDate);
+    const overdue = days < 0;
+    return `<tr>
+      <td><strong>${i.id}</strong></td><td>${i.customerName}</td>
+      <td>${fmtD(i.date)}</td><td>${fmtD(i.dueDate)}</td>
+      <td class="mono">${SAR(i.total)}</td>
+      <td class="mono amt-green">${SAR(i.paid||0)}</td>
+      <td class="mono ${bal>0?'amt-red':''}">${SAR(bal)}</td>
+      <td class="${overdue?'amt-red':''}">${overdue?Math.abs(days)+' days':'-'}</td>
+      <td>${badge(i.status)}</td>
+      <td><button class="btn btn-success btn-xs" onclick="openPay('${i.id}','invoice')">Pay</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── SUPPLIERS ────────────────────────────────────────────────
+async function renderSuppliers() {
+  const items = await API.get('/api/suppliers');
+  const q = document.getElementById('sup-q')?.value?.toLowerCase()||'';
+  const filtered = items.filter(s=>!q||s.name.toLowerCase().includes(q));
+  document.getElementById('sup-ct').textContent = filtered.length;
+  // Populate purchase modal dropdown
+  document.getElementById('po-sup').innerHTML = items.map(s=>`<option value="${s.id}" data-name="${s.name}">${s.name}</option>`).join('');
+  document.getElementById('sup-tbody').innerHTML = filtered.map(s=>`<tr>
+    <td><strong>${s.name}</strong><br><small style="color:var(--text3)">${s.contact||''}</small></td>
+    <td>${s.email||'—'}</td>
+    <td>${badge(s.category,CAT_COLOR[s.category])}</td>
+    <td>${s.leadDays} days</td><td>${s.paymentTerms}</td>
+    <td class="mono ${s.balance>0?'amt-amber':''}">${SAR(s.balance||0)}</td>
+    <td>⭐ ${s.rating||'—'}</td>
+    <td>${badge(s.status||'Active')}</td>
+    <td><button class="btn btn-danger btn-xs" onclick="delItem('suppliers','${s.id}')">✕</button></td>
+  </tr>`).join('');
+}
+
+async function saveSupplier() {
+  const name = document.getElementById('su-name').value.trim();
+  if(!name){toast('Supplier name required','err');return}
+  const res = await API.post('/api/suppliers',{
+    name, contact:document.getElementById('su-contact').value,
+    email:document.getElementById('su-email').value, phone:document.getElementById('su-phone').value,
+    category:document.getElementById('su-cat').value,
+    leadDays:parseInt(document.getElementById('su-lead').value)||7,
+    paymentTerms:document.getElementById('su-terms').value,
+    rating:4.0, balance:0, status:'Active'
+  });
+  if(res.error){toast(res.error,'err');return}
+  closeModal('m-sup'); clearForm('su-name,su-contact,su-email,su-phone,su-lead');
+  renderSuppliers(); toast('✅ Supplier added!');
+}
+
+// ── PURCHASES ────────────────────────────────────────────────
+async function renderPurchases() {
+  const sups = await API.get('/api/suppliers');
+  document.getElementById('po-sup').innerHTML = sups.map(s=>`<option value="${s.id}" data-name="${s.name}">${s.name}</option>`).join('');
+
+  const items = await API.get('/api/purchases');
+  const st = document.getElementById('po-st')?.value||'';
+  const filtered = items.filter(p=>!st||p.status===st);
+  const open = items.filter(p=>!['Received','Cancelled'].includes(p.status));
+  document.getElementById('po-open').textContent = open.length;
+  document.getElementById('po-val').textContent = SAR(open.reduce((s,p)=>s+p.total,0));
+  document.getElementById('po-recv').textContent = items.filter(p=>p.status==='Received').length;
+  document.getElementById('po-tbody').innerHTML = filtered.map(p=>`<tr>
+    <td><strong>${p.id}</strong></td><td>${p.supplierName}</td><td>${fmtD(p.date)}</td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(p.items||[]).map(i=>i.name||'').join(', ')||p.notes||'—'}</td>
+    <td class="mono">${SAR(p.subtotal||0)}</td>
+    <td class="mono">${SAR(p.tax||0)}</td>
+    <td class="mono"><strong>${SAR(p.total)}</strong></td>
+    <td>${fmtD(p.expectedDate)}</td><td>${p.terms}</td><td>${badge(p.status)}</td>
+    <td><div class="act">
+      <button class="btn btn-ghost btn-xs" onclick="cycleStatus('purchases','${p.id}',['Pending','Approved','Received','Cancelled'])">→</button>
+      <button class="btn btn-danger btn-xs" onclick="delItem('purchases','${p.id}')">✕</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function calcPOTotal() {
+  const sub = parseFloat(document.getElementById('po-sub').value)||0;
+  const tax = sub*0.15;
+  document.getElementById('po-tax').value = tax.toFixed(2);
+  document.getElementById('po-total-f').value = (sub+tax).toFixed(2);
+}
+
+async function savePurchase() {
+  const supEl = document.getElementById('po-sup');
+  if(!supEl.value){toast('Select supplier','err');return}
+  const sub = parseFloat(document.getElementById('po-sub').value)||0;
+  if(!sub){toast('Subtotal required','err');return}
+  const tax = sub*0.15;
+  const supName = supEl.options[supEl.selectedIndex].text;
+  const res = await API.post('/api/purchases',{
+    supplierId:supEl.value, supplierName:supName,
+    date:document.getElementById('po-date').value||today(),
+    items:[{name:document.getElementById('po-items').value,qty:1,unitPrice:sub,total:sub}],
+    subtotal:sub, tax, total:sub+tax,
+    expectedDate:document.getElementById('po-del').value,
+    terms:document.getElementById('po-terms').value, status:'Pending',
+    notes:document.getElementById('po-notes').value
+  });
+  if(res.error){toast(res.error,'err');return}
+  closeModal('m-po'); clearForm('po-sub,po-tax,po-total-f,po-items,po-notes');
+  renderPurchases(); toast('✅ Purchase order created! Supplier bill auto-generated.');
+}
+
+// ── PAYABLES ─────────────────────────────────────────────────
+async function renderPayables() {
+  const [rows, bills] = await Promise.all([API.get('/api/payables'), API.get('/api/supplierBills')]);
+  const total = rows.reduce((s,r)=>s+r.totalPayable,0);
+  const overdue = rows.reduce((s,r)=>s+r.overdueAmount,0);
+  document.getElementById('ap-total').textContent = SAR(total);
+  document.getElementById('ap-overdue').textContent = SAR(overdue);
+  document.getElementById('ap-sups').textContent = rows.length;
+  document.getElementById('ap-tbody').innerHTML = rows.map(r=>`<tr>
+    <td><strong>${r.name}</strong></td>
+    <td>${badge(r.category,CAT_COLOR[r.category])}</td>
+    <td>${r.billCount}</td>
+    <td class="mono amt-amber"><strong>${SAR(r.totalPayable)}</strong></td>
+    <td class="mono ${r.overdueAmount>0?'amt-red':''}">${SAR(r.overdueAmount)}</td>
+    <td>${badge(r.overdueAmount>0?'Overdue':'Outstanding')}</td>
+  </tr>`).join('') || '<tr><td colspan="6" class="empty"><p>✅ No outstanding payables</p></td></tr>';
+
+  const unpaid = bills.filter(b=>b.status!=='Paid');
+  document.getElementById('ap-bill-tbody').innerHTML = unpaid.map(b=>{
+    const bal = b.total-(b.paid||0);
+    const days = daysUntil(b.dueDate);
+    const ov = days < 0;
+    return `<tr>
+      <td><strong>${b.id}</strong></td><td>${b.supplierName}</td>
+      <td>${fmtD(b.date)}</td><td>${fmtD(b.dueDate)}</td>
+      <td class="mono">${SAR(b.total)}</td>
+      <td class="mono amt-green">${SAR(b.paid||0)}</td>
+      <td class="mono ${bal>0?'amt-amber':''}">${SAR(bal)}</td>
+      <td class="${ov?'amt-red':''}">${ov?Math.abs(days)+' days':'-'}</td>
+      <td>${badge(b.status)}</td>
+      <td><button class="btn btn-success btn-xs" onclick="openPay('${b.id}','bill')">Pay</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── PAYMENT ──────────────────────────────────────────────────
+function openPay(id, type) {
+  document.getElementById('pay-id').value = id;
+  document.getElementById('pay-type').value = type;
+  document.getElementById('pay-amt').value = '';
+  openModal('m-pay');
+}
+
+async function doPayment() {
+  const id = document.getElementById('pay-id').value;
+  const type = document.getElementById('pay-type').value;
+  const amt = parseFloat(document.getElementById('pay-amt').value)||0;
+  const endpoint = type==='invoice' ? `/api/invoices/${id}/pay` : `/api/supplierBills/${id}/pay`;
+  const res = await API.post(endpoint, {amount:amt});
+  if(res.error){toast(res.error,'err');return}
+  closeModal('m-pay');
+  toast('✅ Payment of ' + SAR(amt||res.total) + ' recorded!');
+  if(type==='invoice') renderInvoices();
+  else renderPayables();
+}
+
+// ── PRODUCTION ───────────────────────────────────────────────
+async function renderProduction() {
+  const prods = await API.get('/api/products');
+  document.getElementById('bt-prod').innerHTML = prods.map(p=>`<option value="${p.id}" data-name="${p.name} ${p.variant||''}">${p.name} ${p.variant||''}</option>`).join('');
+
+  const items = await API.get('/api/production');
+  const total = items.length;
+  const units = items.reduce((s,b)=>s+(b.producedQty||0),0);
+  const prog = items.filter(b=>b.status==='In Progress').length;
+  const passed = items.filter(b=>b.qcStatus==='Passed').length;
+  document.getElementById('pr-total').textContent = total;
+  document.getElementById('pr-units').textContent = units.toLocaleString();
+  document.getElementById('pr-prog').textContent = prog;
+  document.getElementById('pr-qc').textContent = total ? Math.round(passed/total*100)+'%' : '100%';
+  document.getElementById('pr-tbody').innerHTML = items.map(b=>`<tr>
+    <td><strong>${b.id}</strong></td><td>${b.productName}</td>
+    <td class="mono">${(b.plannedQty||0).toLocaleString()}</td>
+    <td class="mono">${b.producedQty>0?b.producedQty.toLocaleString():'—'}</td>
+    <td>${fmtD(b.startDate)}</td><td>${fmtD(b.endDate)}</td>
+    <td>${b.assignedTo||'—'}</td>
+    <td>${badge(b.qcStatus)}</td><td>${badge(b.status)}</td>
+    <td><div class="act">
+      <button class="btn btn-ghost btn-xs" onclick="cycleStatus('production','${b.id}',['Planned','In Progress','Completed'])">→</button>
+      <button class="btn btn-danger btn-xs" onclick="delItem('production','${b.id}')">✕</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+async function saveBatch() {
+  const prodEl = document.getElementById('bt-prod');
+  if(!prodEl.value){toast('Select product','err');return}
+  const prodName = prodEl.options[prodEl.selectedIndex].text;
+  const res = await API.post('/api/production',{
+    productId:prodEl.value, productName:prodName,
+    plannedQty:parseInt(document.getElementById('bt-qty').value)||0, producedQty:0,
+    startDate:document.getElementById('bt-start').value||today(),
+    endDate:document.getElementById('bt-end').value,
+    assignedTo:document.getElementById('bt-team').value,
+    notes:document.getElementById('bt-notes').value,
+    qcStatus:'Pending', status:'Planned'
+  });
+  if(res.error){toast(res.error,'err');return}
+  closeModal('m-batch'); clearForm('bt-qty,bt-start,bt-end,bt-team,bt-notes');
+  renderProduction(); toast('✅ Batch ' + res.id + ' created!');
+}
+
+// ── ACCOUNTING ───────────────────────────────────────────────
+async function renderAccounting() {
+  const [invs, exps, db] = await Promise.all([API.get('/api/invoices'),API.get('/api/expenses'),API.get('/api/dashboard')]);
+  const rev = db.revenue;
+  const exp = db.expenses;
+  const net = rev - exp;
+  const margin = rev ? (net/rev*100).toFixed(1) : 0;
+  document.getElementById('acc-rev').textContent = SAR(rev);
+  document.getElementById('acc-exp-val').textContent = SAR(exp);
+  document.getElementById('acc-net').textContent = SAR(net);
+  document.getElementById('acc-margin').textContent = margin + '%';
+
+  const cogs = exp*0.72; const gross = rev-cogs; const opex = exp*0.28;
+  document.getElementById('pl-body').innerHTML = `
+    <div class="pl-r"><span>Revenue (collected)</span><span class="pl-pos">${SAR(rev)}</span></div>
+    <div class="pl-r pl-sub pl-neg"><span>Cost of Goods Sold (est.)</span><span>-${SAR(cogs)}</span></div>
+    <div class="pl-r pl-pos"><span>Gross Profit</span><span>${SAR(gross)}</span></div>
+    <div class="pl-r pl-sub pl-neg"><span>Operating Expenses</span><span>-${SAR(opex)}</span></div>
+    <div class="pl-r"><span>Net Profit</span><span style="color:var(--mint)">${SAR(gross-opex)}</span></div>`;
+
+  const vals = db.revenueChart||[];
+  const max = Math.max(...vals.map(v=>v.value),1);
+  document.getElementById('acc-chart').innerHTML = vals.map((v,i)=>`
+    <div class="bar-col"><div class="bar-fill" style="height:${Math.max(4,Math.round(v.value/max*100))}%;${i===vals.length-1?'background:var(--mint);opacity:1':''}"></div></div>`).join('');
+  document.getElementById('acc-labels').innerHTML = vals.map(v=>`<span>${v.label}</span>`).join('');
+
+  document.getElementById('exp-tbody').innerHTML = exps.map(e=>`<tr>
+    <td>${fmtD(e.date)}</td><td>${badge(e.category,'bg-gray')}</td>
+    <td>${e.description}</td><td class="mono"><strong>${SAR(e.amount)}</strong></td>
+    <td>${e.paidBy}</td>
+    <td><button class="btn btn-danger btn-xs" onclick="delItem('expenses','${e.id}')">✕</button></td>
+  </tr>`).join('');
+}
+
+function accTab(el,id) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['acc-pl','acc-exp'].forEach(s=>{document.getElementById(s).style.display=s===id?'':'none'});
+}
+
+async function saveExpense() {
+  const desc = document.getElementById('ex-desc').value.trim();
+  const amt = parseFloat(document.getElementById('ex-amt').value)||0;
+  if(!desc||!amt){toast('Description and amount required','err');return}
+  const res = await API.post('/api/expenses',{
+    date:document.getElementById('ex-date').value||today(),
+    category:document.getElementById('ex-cat').value,
+    description:desc, amount:amt, paidBy:document.getElementById('ex-paid').value
+  });
+  if(res.error){toast(res.error,'err');return}
+  closeModal('m-exp'); clearForm('ex-desc,ex-amt');
+  renderAccounting(); toast('✅ Expense recorded!');
+}
+
+// ── SETTINGS ─────────────────────────────────────────────────
+async function loadSettings() {
+  const s = await API.get('/api/settings');
+  document.getElementById('s-co').value = s.company||'';
+  document.getElementById('s-vat').value = s.vat||'';
+  document.getElementById('s-name').value = s.userName||'';
+  document.getElementById('s-role').value = s.userRole||'Manager';
+  document.getElementById('s-email').value = s.userEmail||'';
+  document.getElementById('s-low').value = s.lowStockPct||30;
+  document.getElementById('s-exp').value = s.expiryDays||30;
+  // Update sidebar
+  const n = s.userName||'Admin';
+  document.getElementById('sb-uname').textContent = n;
+  document.getElementById('sb-urole').textContent = s.userRole||'Manager';
+  document.getElementById('sb-av').textContent = n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+}
+
+async function saveSettings() {
+  const res = await API.put('/api/settings',{
+    company:document.getElementById('s-co').value,
+    vat:document.getElementById('s-vat').value,
+    country:document.getElementById('s-country').value,
+    currency:document.getElementById('s-currency').value,
+    userName:document.getElementById('s-name').value||'Admin',
+    userRole:document.getElementById('s-role').value,
+    userEmail:document.getElementById('s-email').value,
+    lowStockPct:parseInt(document.getElementById('s-low').value)||30,
+    expiryDays:parseInt(document.getElementById('s-exp').value)||30,
+  });
+  if(res.error){toast(res.error,'err');return}
+  loadSettings(); toast('✅ Settings saved!');
+}
+
+// ── SHARED UTILS ─────────────────────────────────────────────
+async function cycleStatus(table, id, cycle) {
+  const endpoint = table==='salesOrders'?'salesOrders':table==='purchases'?'purchases':'production';
+  const items = await API.get('/api/'+endpoint);
+  const item = items.find(i=>i.id===id);
+  if(!item) return;
+  const cur = cycle.indexOf(item.status);
+  const next = cycle[(cur+1)%cycle.length];
+  const update = {status:next};
+  if(next==='Completed'&&table==='production'){update.qcStatus='Passed';update.producedQty=item.plannedQty}
+  await API.put('/api/'+endpoint+'/'+id, update);
+  RENDER[table==='salesOrders'?'orders':table==='purchases'?'purchases':'production']?.();
+  toast('Status → ' + next);
+}
+
+async function delItem(table, id) {
+  if(!confirm('Delete this item? This cannot be undone.')) return;
+  const pageMap = {
+    products:'products',rawMaterials:'rawmaterials',inventory:'inventory',
+    customers:'customers',salesOrders:'orders',invoices:'invoicing',
+    suppliers:'suppliers',purchases:'purchases',supplierBills:'payables',
+    expenses:'accounting',production:'production'
+  };
+  await API.del('/api/'+table+'/'+id);
+  RENDER[pageMap[table]]?.();
+  toast('Deleted.');
+}
+
+function csvExport(tblId, fname) {
+  const tbl = document.getElementById(tblId);
+  if(!tbl){toast('Nothing to export','err');return}
+  let csv='';
+  tbl.querySelectorAll('tr').forEach(row=>{
+    const cells=Array.from(row.querySelectorAll('th,td')).slice(0,-1);
+    if(cells.length)csv+=cells.map(c=>'"'+c.innerText.replace(/"/g,'""').replace(/\n/g,' ')+'"').join(',')+'\n';
+  });
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=fname;a.click();
+  toast('Exported: '+fname);
+}
+
+function clearForm(ids) {
+  ids.split(',').forEach(id=>{ const el=document.getElementById(id.trim()); if(el)el.value=''; });
+}
+
+function openModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+document.querySelectorAll('.ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+
+function toast(msg,type){
+  const el=document.createElement('div');
+  el.className='toast'+(type==='err'?' err':type==='warn'?' warn':'');
+  el.textContent=msg;
+  document.getElementById('toaster').appendChild(el);
+  setTimeout(()=>el.remove(),3500);
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',async()=>{
+  await loadSettings();
+  renderDashboard();
+});
+</script>
+</body>
+</html>
