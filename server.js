@@ -499,10 +499,19 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Resolve public directory — try __dirname first, fall back to cwd()
+  // (Railway sometimes runs from a different working directory)
+  const PUBLIC = fs.existsSync(path.join(__dirname, 'public', 'index.html'))
+    ? path.join(__dirname, 'public')
+    : path.join(process.cwd(), 'public');
+
   // login.html is public (no auth needed)
   if (url === '/login.html' || url === '/login') {
-    fs.readFile(path.join(__dirname, 'public', 'login.html'), (e, data) => {
-      if (e) { res.writeHead(404); res.end('Login page not found'); return; }
+    fs.readFile(path.join(PUBLIC, 'login.html'), (e, data) => {
+      if (e) {
+        console.error('login.html not found at:', path.join(PUBLIC, 'login.html'));
+        res.writeHead(404); res.end('Login page not found'); return;
+      }
       res.writeHead(200, { 'Content-Type':'text/html' });
       res.end(data);
     });
@@ -517,13 +526,13 @@ const server = http.createServer((req, res) => {
   }
 
   // Serve static files
-  let filePath = path.join(__dirname, 'public', url === '/' ? 'index.html' : url);
+  let filePath = path.join(PUBLIC, url === '/' ? 'index.html' : url);
   const ext = path.extname(filePath);
   if (!ext) filePath += '.html';
 
   fs.readFile(filePath, (e, data) => {
     if (e) {
-      fs.readFile(path.join(__dirname, 'public', 'index.html'), (e2, d2) => {
+      fs.readFile(path.join(PUBLIC, 'index.html'), (e2, d2) => {
         if (e2) { res.writeHead(404); res.end('Not found'); return; }
         res.writeHead(200, { 'Content-Type':'text/html' });
         res.end(d2);
@@ -536,7 +545,13 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
+  // Resolve public dir for startup log
+  const PUBLIC_LOG = fs.existsSync(path.join(__dirname, 'public', 'index.html'))
+    ? path.join(__dirname, 'public')
+    : path.join(process.cwd(), 'public');
   console.log(`\n❄️  FrostOps ERP is running!`);
-  console.log(`   Open:  http://localhost:${PORT}`);
-  console.log(`   Users: Admin / Zahid123  |  User1 / SpringFoods\n`);
+  console.log(`   Open:    http://localhost:${PORT}`);
+  console.log(`   Public:  ${PUBLIC_LOG}`);
+  console.log(`   DB:      ${DB_FILE}`);
+  console.log(`   Users:   Admin / Zahid123  |  User1 / SpringFoods\n`);
 });
