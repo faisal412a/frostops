@@ -11,8 +11,14 @@ const http = require('http');
 const fs   = require('fs');
 const path = require('path');
 
-const PORT    = process.env.PORT || 3000;
-const DB_FILE = path.join(__dirname, 'db.json');
+const PORT = process.env.PORT || 3000;
+
+// Railway & Render have read-only app directories — use /tmp which is always writable.
+// Locally it stays next to server.js as db.json.
+const DB_DIR  = (process.env.RAILWAY_ENVIRONMENT || process.env.RENDER)
+  ? '/tmp'
+  : __dirname;
+const DB_FILE = path.join(DB_DIR, 'db.json');
 
 // ─── DB HELPERS ────────────────────────────────────────────
 function loadDB() {
