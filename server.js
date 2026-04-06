@@ -178,6 +178,149 @@ function seedDB() {
 // ─── MIME TYPES ─────────────────────────────────────────────
 const MIME = { '.html':'text/html', '.js':'application/javascript', '.css':'text/css', '.json':'application/json', '.ico':'image/x-icon' };
 
+// ─── EMBEDDED LOGIN PAGE ────────────────────────────────────
+// login.html is baked into server.js so it works even if the
+// public/ folder is missing on the server (common Railway issue).
+const LOGIN_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FrostOps ERP — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:#0c1220;display:flex;align-items:center;justify-content:center}
+
+.bg{position:fixed;inset:0;background:#0c1220;overflow:hidden}
+.bg::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,200,215,.08) 0%,transparent 70%);top:-100px;left:-100px}
+.bg::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,200,215,.05) 0%,transparent 70%);bottom:-50px;right:-50px}
+
+.card{
+  position:relative;z-index:1;
+  background:#111927;border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;padding:48px 44px;width:100%;max-width:420px;
+  box-shadow:0 32px 80px rgba(0,0,0,.5);
+}
+
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:36px}
+.logo-box{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#00c8d7,#007a88);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.logo-text{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1}
+.logo-sub{font-size:11px;color:#3d5a72;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+h1{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:#fff;margin-bottom:6px}
+.sub{font-size:14px;color:#4a6a88;margin-bottom:32px}
+
+.fgrp{margin-bottom:18px}
+label{display:block;font-size:11.5px;font-weight:600;color:#4a6a88;text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
+input{
+  width:100%;padding:12px 14px;
+  background:#0c1825;border:1.5px solid rgba(255,255,255,.1);
+  border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;
+  color:#fff;outline:none;transition:border .2s;
+}
+input:focus{border-color:#00c8d7}
+input::placeholder{color:#2a4055}
+
+.btn-login{
+  width:100%;padding:13px;background:linear-gradient(135deg,#00c8d7,#009fb0);
+  border:none;border-radius:10px;font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:700;color:#fff;cursor:pointer;
+  margin-top:8px;transition:opacity .2s;letter-spacing:.2px;
+}
+.btn-login:hover{opacity:.9}
+.btn-login:active{opacity:.8;transform:scale(.99)}
+.btn-login:disabled{opacity:.5;cursor:not-allowed}
+
+.error{
+  background:rgba(240,64,96,.12);border:1px solid rgba(240,64,96,.3);
+  color:#f04060;border-radius:8px;padding:11px 14px;font-size:13px;
+  margin-bottom:18px;display:none;
+}
+.error.show{display:block}
+
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.footer{margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.06);text-align:center;font-size:12px;color:#2a4055}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-box">❄️</div>
+    <div>
+      <div class="logo-text">FrostOps</div>
+      <div class="logo-sub">Frozen Food ERP</div>
+    </div>
+  </div>
+
+  <h1>Welcome back</h1>
+  <p class="sub">Sign in to continue to your dashboard</p>
+
+  <div class="error" id="error-msg">Incorrect username or password. Please try again.</div>
+
+  <form id="login-form" onsubmit="doLogin(event)">
+    <div class="fgrp">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required autofocus>
+    </div>
+    <div class="fgrp">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="btn-login" id="login-btn">Sign In</button>
+  </form>
+
+  <div class="footer">FrostOps ERP v2.1 &nbsp;·&nbsp; Frozen Food Management</div>
+</div>
+
+<script>
+async function doLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  const errEl = document.getElementById('error-msg');
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Signing in…';
+  errEl.classList.remove('show');
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+      credentials: 'include',
+    });
+    const data = await res.json();
+    if (res.ok) {
+      // Small delay so user sees success state
+      btn.innerHTML = '✓ Signed in — redirecting…';
+      setTimeout(() => { window.location.href = '/'; }, 400);
+    } else {
+      errEl.textContent = data.error || 'Login failed. Please try again.';
+      errEl.classList.add('show');
+      btn.disabled = false;
+      btn.innerHTML = 'Sign In';
+      document.getElementById('password').value = '';
+      document.getElementById('password').focus();
+    }
+  } catch(err) {
+    errEl.textContent = 'Connection error. Is the server running?';
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.innerHTML = 'Sign In';
+  }
+}
+</script>
+</body>
+</html>
+`;
+
 // ─── RESPONSE HELPERS ───────────────────────────────────────
 function json(res, data, code=200) {
   res.writeHead(code, { 'Content-Type':'application/json', 'Access-Control-Allow-Origin':'*' });
@@ -505,16 +648,10 @@ const server = http.createServer((req, res) => {
     ? path.join(__dirname, 'public')
     : path.join(process.cwd(), 'public');
 
-  // login.html is public (no auth needed)
+  // login.html — served from embedded string (never fails even if public/ is missing)
   if (url === '/login.html' || url === '/login') {
-    fs.readFile(path.join(PUBLIC, 'login.html'), (e, data) => {
-      if (e) {
-        console.error('login.html not found at:', path.join(PUBLIC, 'login.html'));
-        res.writeHead(404); res.end('Login page not found'); return;
-      }
-      res.writeHead(200, { 'Content-Type':'text/html' });
-      res.end(data);
-    });
+    res.writeHead(200, { 'Content-Type':'text/html' });
+    res.end(LOGIN_HTML);
     return;
   }
 
